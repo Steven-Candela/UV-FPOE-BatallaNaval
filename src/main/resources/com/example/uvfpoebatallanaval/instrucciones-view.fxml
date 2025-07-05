@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="478.0" style="-fx-background-color: linear-gradient(to bottom, #ADD8E6, #FFFFFF);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox alignment="TOP_CENTER" layoutY="14.0" prefHeight="400.0" prefWidth="478.0" spacing="20.0">
+         <children>
+            <Label text="Instrucciones del Juego">
+               <font>
+                  <Font name="Cambria Bold" size="20.0" />
+               </font>
+            </Label>
+            <Label text="Objetivo: Hundir todos los barcos del oponente antes de que él hunda los &#10;tuyos.&#10;&#10;Cómo jugar: Cada jugador tiene una cuadrícula donde coloca sus barcos &#10;en secreto. En cada turno, selecciona una celda del tablero enemigo para &#10;disparar. Si aciertas en un barco, será marcado como tocado. Si fallas, &#10;se marcará como agua.&#10;&#10;Tipos de barcos: &#10;&#10;- Portaviones (4 casillas)&#10;- Submarinos (3 casillas)&#10;- Destructores (2 casillas)&#10;- Fragatas (1 casilla)&#10;&#10;Fin del juego: El juego termina cuando un jugador ha hundido todos los &#10;barcos del oponente.">
+               <font>
+                  <Font name="Georgia" size="14.0" />
+               </font>
+            </Label>
+            <Button fx:id="volverAlMenuButton" mnemonicParsing="false" text="Volver al Menú">
+               <font>
+                  <Font name="Book Antiqua" size="16.0" />
+               </font>
+            </Button>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
