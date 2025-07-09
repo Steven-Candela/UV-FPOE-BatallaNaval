@@ -13,7 +13,7 @@
             <Font name="Algerian" size="32.0" />
          </font>
       </Label>
-      <Button fx:id="InstruccionesButton" layoutX="352.0" layoutY="14.0" mnemonicParsing="false" text="?">
+      <Button fx:id="InstruccionesButton" layoutX="352.0" layoutY="14.0" mnemonicParsing="false" onAction="#onActionInstruccionesButton" text="?">
          <font>
             <Font name="Palatino Linotype Bold" size="18.0" />
          </font>
@@ -30,12 +30,12 @@
                   <Font name="Palatino Linotype Bold" size="16.0" />
                </font>
             </Button>
-            <Button fx:id="CreditosButton" mnemonicParsing="false" text="Créditos">
+            <Button fx:id="CreditosButton" mnemonicParsing="false" onAction="#onActionCreditosButton" text="Créditos">
                <font>
                   <Font name="Palatino Linotype Bold" size="16.0" />
                </font>
             </Button>
-            <Button fx:id="SalirButton" mnemonicParsing="false" text="Salir del Juego">
+            <Button fx:id="SalirButton" mnemonicParsing="false" onAction="#onActionSalirButton" text="Salir del Juego">
                <font>
                   <Font name="Palatino Linotype Bold" size="16.0" />
                </font>

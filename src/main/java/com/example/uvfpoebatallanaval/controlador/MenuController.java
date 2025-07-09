@@ -18,6 +18,32 @@ public class MenuController {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setTitle("Juego");
         stage.setScene(scene);
+        stage.setMaximized(true);
+        stage.show();
+    }
+
+    @FXML
+    private void onActionCreditosButton(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/uvfpoebatallanaval/creditos-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setTitle("Créditos");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @FXML
+    private void onActionSalirButton(ActionEvent event) {
+        System.exit(0);
+    }
+
+    @FXML
+    private void onActionInstruccionesButton(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/uvfpoebatallanaval/instrucciones-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setTitle("Instrucciones");
+        stage.setScene(scene);
         stage.show();
     }
 }
