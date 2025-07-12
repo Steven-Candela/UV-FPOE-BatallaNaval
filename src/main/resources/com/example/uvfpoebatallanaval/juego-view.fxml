@@ -24,7 +24,7 @@
                <font>
                   <Font name="Berlin Sans FB" size="24.0" />
                </font></Label>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0" />
+            <AnchorPane fx:id="contenedorBarcos" prefHeight="200.0" prefWidth="200.0" />
          </children>
       </VBox>
    </left>
