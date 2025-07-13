@@ -11,9 +11,9 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="608.0" prefWidth="910.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uvfpoebatallanaval.controlador.GameController">
    <top>
-      <Label text="Batalla Naval" BorderPane.alignment="CENTER">
+      <Label style="-fx-font-weight: bold; -fx-text-fill: #0055A5; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 4, 0.5, 2, 2);" text="Batalla Naval" BorderPane.alignment="CENTER">
          <font>
-            <Font name="Century" size="36.0" />
+            <Font name="Corbel Bold" size="42.0" />
          </font>
       </Label>
    </top>
@@ -24,7 +24,7 @@
                <font>
                   <Font name="Berlin Sans FB" size="24.0" />
                </font></Label>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0" />
+            <AnchorPane fx:id="contenedorBarcos" prefHeight="200.0" prefWidth="200.0" />
          </children>
       </VBox>
    </left>
@@ -57,7 +57,7 @@
    <bottom>
       <VBox alignment="CENTER" prefHeight="96.0" prefWidth="658.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <Label text="Turno: Jugador">
+            <Label text="Turno:">
                <font>
                   <Font name="Bookman Old Style" size="18.0" />
                </font></Label>
@@ -67,18 +67,23 @@
                </font></Label>
             <HBox alignment="CENTER" prefHeight="34.0" prefWidth="658.0" spacing="100.0">
                <children>
-                  <Button mnemonicParsing="false" text="Reiniciar">
+                  <Button fx:id="reiniciarButton" mnemonicParsing="false" text="Reiniciar">
                      <font>
                         <Font name="Gill Sans MT" size="18.0" />
                      </font></Button>
-                  <Button mnemonicParsing="false" text="Ver Tablero Enemigo">
+                  <Button fx:id="verTableroEnemigoButton" mnemonicParsing="false" text="Ver Tablero Enemigo">
                      <font>
                         <Font name="Gill Sans MT" size="18.0" />
                      </font></Button>
-                  <Button mnemonicParsing="false" text="Salir">
+                  <Button fx:id="volverAlMenuButton" mnemonicParsing="false" text="Volver al Menú">
                      <font>
                         <Font name="Gill Sans MT" size="18.0" />
                      </font></Button>
+                  <Button fx:id="salirButton" mnemonicParsing="false" text="Salir">
+                     <font>
+                        <Font name="Gill Sans MT" size="18.0" />
+                     </font>
+                  </Button>
                </children>
             </HBox>
          </children>
