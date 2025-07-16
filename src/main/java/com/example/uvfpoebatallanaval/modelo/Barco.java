@@ -105,4 +105,16 @@ public class Barco {
             default -> Color.GRAY;
         };
     }
+
+    public int getTamaño() {
+        return tamaño;
+    }
+
+    public boolean esHorizontal() {
+        return horizontal;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
 }
