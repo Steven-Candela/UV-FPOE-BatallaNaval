@@ -1,6 +1,7 @@
 package com.example.uvfpoebatallanaval.controlador;
 
 import com.example.uvfpoebatallanaval.modelo.Barco;
+import com.example.uvfpoebatallanaval.modelo.Tablero;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -10,14 +11,19 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
 public class GameController {
-    @FXML
-    private GridPane tableroPosicion, tableroPrincipal;
-    @FXML
-    private AnchorPane contenedorBarcos;
+    private Tablero tableroJugador;
+    private Tablero tableroMaquina;
+
+    @FXML private GridPane tableroPosicion;
+    @FXML private GridPane tableroPrincipal;
+    @FXML private AnchorPane contenedorBarcos;
 
     public void initialize() {
-        crearTablero(tableroPosicion, false);
-        crearTablero(tableroPrincipal, true);
+        tableroJugador = new Tablero();
+        tableroMaquina = new Tablero();
+
+        crearTablero(tableroPosicion, tableroJugador, false);
+        crearTablero(tableroPrincipal, tableroMaquina, true);
         inicializarBarcos();
     }
 
@@ -27,19 +33,19 @@ public class GameController {
         agregarAlContenedor(portaaviones, 50, 50);
 
         // 2 submarinos
-        agregarAlContenedor(new Barco("submarino", false), 280, 50);
-        agregarAlContenedor(new Barco("submarino", true), 260, 200);
+        agregarAlContenedor(new Barco("submarino", false), 150, 340);
+        agregarAlContenedor(new Barco("submarino", true), 50, 340);
 
         // 3 destructores
-        agregarAlContenedor(new Barco("destructor", true), 50, 200);
-        agregarAlContenedor(new Barco("destructor", false), 200, 200);
-        agregarAlContenedor(new Barco("destructor", true), 50, 300);
+        agregarAlContenedor(new Barco("destructor", true), 50, 190);
+        agregarAlContenedor(new Barco("destructor", false), 200, 190);
+        agregarAlContenedor(new Barco("destructor", true), 50, 260);
 
         // 4 fragatas
-        agregarAlContenedor(new Barco("fragata", false), 300, 300);
-        agregarAlContenedor(new Barco("fragata", true), 150, 130);
-        agregarAlContenedor(new Barco("fragata", true), 200, 350);
-        agregarAlContenedor(new Barco("fragata", false), 300, 420);
+        agregarAlContenedor(new Barco("fragata", false), 50, 120);
+        agregarAlContenedor(new Barco("fragata", true), 110, 120);
+        agregarAlContenedor(new Barco("fragata", true), 170, 120);
+        agregarAlContenedor(new Barco("fragata", false), 230, 120);
     }
 
     private void agregarAlContenedor(Barco barco, double x, double y) {
@@ -48,7 +54,7 @@ public class GameController {
         }
     }
 
-    private void crearTablero(GridPane tablero, boolean esInteractivo) {
+        private void crearTablero(GridPane tablero, Tablero modelo, boolean esPrincipal) {
         tablero.getChildren().clear();
 
         // Etiquetas de las columnas (1-10)
@@ -74,6 +80,21 @@ public class GameController {
                 celda.setFill(Color.WHITE);
                 celda.setStroke(Color.BLACK);
 
+                int f = fila, c = col;
+
+                // Si es el tablero principal (de la máquina), se habilita el disparo
+                if (esPrincipal) {
+                    celda.setOnMouseClicked(e -> {
+                        String resultado = modelo.disparar(f, c);
+
+                        switch (resultado) {
+                            case "agua" -> celda.setFill(Color.LIGHTBLUE);
+                            case "tocado" -> celda.setFill(Color.ORANGERED);
+                            case "hundido" -> celda.setFill(Color.DARKRED);
+                            case "invalido" -> System.out.println("Disparo inválido");
+                        }
+                    });
+                }
                 tablero.add(celda, col + 1, fila + 1);
             }
         }
