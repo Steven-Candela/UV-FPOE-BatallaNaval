@@ -1,5 +1,6 @@
 package com.example.uvfpoebatallanaval.controlador;
 
+import com.example.uvfpoebatallanaval.modelo.Arrastrable;
 import com.example.uvfpoebatallanaval.modelo.Barco;
 import com.example.uvfpoebatallanaval.modelo.Tablero;
 import javafx.fxml.FXML;
@@ -10,12 +11,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
+import java.util.List;
+
 public class GameController {
     private Tablero tableroJugador;
     private Tablero tableroMaquina;
 
     @FXML private GridPane tableroPosicion;
     @FXML private GridPane tableroPrincipal;
+    @FXML private AnchorPane zonaTableroPosicion;
     @FXML private AnchorPane contenedorBarcos;
 
     public void initialize() {
@@ -49,12 +53,12 @@ public class GameController {
     }
 
     private void agregarAlContenedor(Barco barco, double x, double y) {
-        for (Shape parte : barco.crearFormas(x, y)) {
-            contenedorBarcos.getChildren().add(parte);
-        }
+        List<Shape> formas = barco.crearFormas(x, y);
+        contenedorBarcos.getChildren().addAll(formas);
+        new BarcoArrastrable(barco, formas);
     }
 
-        private void crearTablero(GridPane tablero, Tablero modelo, boolean esPrincipal) {
+    private void crearTablero(GridPane tablero, Tablero modelo, boolean esPrincipal) {
         tablero.getChildren().clear();
 
         // Etiquetas de las columnas (1-10)
@@ -98,5 +102,50 @@ public class GameController {
                 tablero.add(celda, col + 1, fila + 1);
             }
         }
+    }
+
+    private class BarcoArrastrable implements Arrastrable {
+        private Barco barco;
+        private List<Shape> formas;
+        private double offsetX, offsetY;
+
+        public BarcoArrastrable(Barco barco, List<Shape> formas) {
+            this.barco = barco;
+            this.formas = formas;
+
+            for (Shape forma : formas) {
+                forma.setOnMousePressed(e -> {
+                    offsetX = e.getSceneX() - forma.localToScene(0, 0).getX();
+                    offsetY = e.getSceneY() - forma.localToScene(0, 0).getY();
+                    iniciarArrastre(offsetX, offsetY);
+                });
+
+                forma.setOnMouseDragged(e -> {
+                    double nuevaX = e.getSceneX() - offsetX;
+                    double nuevaY = e.getSceneY() - offsetY;
+                    mover(nuevaX, nuevaY);
+                });
+
+                forma.setOnMouseReleased(e -> {
+                    double x = e.getSceneX() - offsetX;
+                    double y = e.getSceneY() - offsetY;
+                    soltar(x, y);
+                });
+            }
+        }
+
+        @Override
+        public void iniciarArrastre(double offsetX, double offsetY) {}
+
+        @Override
+        public void mover(double x, double y) {
+            for (Shape forma : formas) {
+                forma.setLayoutX(x);
+                forma.setLayoutY(y);
+            }
+        }
+
+        @Override
+        public void soltar(double x, double y) {}
     }
 }
