@@ -3,14 +3,20 @@ package com.example.uvfpoebatallanaval.controlador;
 import com.example.uvfpoebatallanaval.modelo.Arrastrable;
 import com.example.uvfpoebatallanaval.modelo.Barco;
 import com.example.uvfpoebatallanaval.modelo.Tablero;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.List;
 
 public class GameController {
@@ -29,6 +35,17 @@ public class GameController {
         crearTablero(tableroPosicion, tableroJugador, false);
         crearTablero(tableroPrincipal, tableroMaquina, true);
         inicializarBarcos();
+    }
+
+    @FXML
+    private void onActionVolverMenu(ActionEvent event) throws IOException {
+        System.out.println("El juego inicia");
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/uvfpoebatallanaval/menu-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setTitle("Juego");
+        stage.setScene(scene);
+        stage.show();
     }
 
     private void inicializarBarcos() {
