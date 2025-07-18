@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="608.0" prefWidth="910.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uvfpoebatallanaval.controlador.GameController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="608.0" prefWidth="910.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uvfpoebatallanaval.controlador.GameController">
    <top>
       <Label style="-fx-font-weight: bold; -fx-text-fill: #0055A5; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 4, 0.5, 2, 2);" text="Batalla Naval" BorderPane.alignment="CENTER">
          <font>
@@ -75,7 +70,7 @@
                      <font>
                         <Font name="Gill Sans MT" size="18.0" />
                      </font></Button>
-                  <Button fx:id="volverAlMenuButton" mnemonicParsing="false" text="Volver al Menú">
+                  <Button fx:id="volverAlMenuButton" mnemonicParsing="false" onAction="#onActionVolverMenu" text="Volver al Menú">
                      <font>
                         <Font name="Gill Sans MT" size="18.0" />
                      </font></Button>

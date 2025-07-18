@@ -4,7 +4,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="478.0" style="-fx-background-color: linear-gradient(to bottom, #ADD8E6, #FFFFFF);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:controller="com.example.uvfpoebatallanaval.controlador.InstructionsController"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            maxHeight="-Infinity" maxWidth="-Infinity"
+            minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="400.0" prefWidth="478.0"
+            style="-fx-background-color: linear-gradient(to bottom, #ADD8E6, #FFFFFF);">
+
    <children>
       <VBox alignment="TOP_CENTER" layoutY="14.0" prefHeight="400.0" prefWidth="478.0" spacing="20.0">
          <children>
@@ -18,7 +25,7 @@
                   <Font name="Georgia" size="14.0" />
                </font>
             </Label>
-            <Button fx:id="volverAlMenuButton" mnemonicParsing="false" text="Volver al Menú">
+            <Button fx:id="volverAlMenuButton" mnemonicParsing="false" onAction="#onActionVolverMenu" text="Volver al Menú">
                <font>
                   <Font name="Book Antiqua" size="16.0" />
                </font>
