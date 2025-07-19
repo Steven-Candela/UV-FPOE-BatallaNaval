@@ -37,6 +37,7 @@ public class GameController {
         inicializarBarcos();
     }
 
+
     @FXML
     private void onActionVolverMenu(ActionEvent event) throws IOException {
         System.out.println("El juego inicia");
