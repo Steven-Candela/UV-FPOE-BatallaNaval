@@ -3,6 +3,7 @@ package com.example.uvfpoebatallanaval.controlador;
 import com.example.uvfpoebatallanaval.modelo.Arrastrable;
 import com.example.uvfpoebatallanaval.modelo.Barco;
 import com.example.uvfpoebatallanaval.modelo.Tablero;
+import com.example.uvfpoebatallanaval.vista.ElementosDisparo;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -25,7 +27,6 @@ public class GameController {
 
     @FXML private GridPane tableroPosicion;
     @FXML private GridPane tableroPrincipal;
-    @FXML private AnchorPane zonaTableroPosicion;
     @FXML private AnchorPane contenedorBarcos;
 
     public void initialize() {
@@ -98,9 +99,14 @@ public class GameController {
         // Creación de las celdas
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
-                Rectangle celda = new Rectangle(45, 45);
-                celda.setFill(Color.WHITE);
-                celda.setStroke(Color.BLACK);
+                StackPane celda = new StackPane();
+                celda.setPrefSize(45, 45);
+
+                Rectangle fondo = new Rectangle(45, 45);
+                fondo.setFill(Color.WHITE);
+                fondo.setStroke(Color.BLACK);
+
+                celda.getChildren().add(fondo);
 
                 int f = fila, c = col;
 
@@ -109,11 +115,15 @@ public class GameController {
                     celda.setOnMouseClicked(e -> {
                         String resultado = modelo.disparar(f, c);
 
-                        switch (resultado) {
-                            case "agua" -> celda.setFill(Color.LIGHTBLUE);
-                            case "tocado" -> celda.setFill(Color.ORANGERED);
-                            case "hundido" -> celda.setFill(Color.DARKRED);
-                            case "invalido" -> System.out.println("Disparo inválido");
+                        List<Shape> formas = switch (resultado) {
+                            case "agua" -> ElementosDisparo.agua(0, 0);
+                            case "tocado" -> ElementosDisparo.tocado(0, 0);
+                            case "hundido" -> ElementosDisparo.hundido(0, 0);
+                            default -> null;
+                        };
+
+                        if (formas != null) {
+                            celda.getChildren().addAll(formas);
                         }
                     });
                 }
