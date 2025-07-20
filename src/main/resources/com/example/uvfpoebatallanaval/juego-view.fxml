@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
@@ -12,17 +13,6 @@
          </font>
       </Label>
    </top>
-   <left>
-      <VBox alignment="TOP_CENTER" prefHeight="466.0" prefWidth="256.0" BorderPane.alignment="CENTER">
-         <children>
-            <Label text="Tus Barcos">
-               <font>
-                  <Font name="Berlin Sans FB" size="24.0" />
-               </font></Label>
-            <AnchorPane fx:id="contenedorBarcos" prefHeight="200.0" prefWidth="200.0" />
-         </children>
-      </VBox>
-   </left>
    <center>
       <HBox alignment="CENTER" prefHeight="334.0" prefWidth="558.0" spacing="30.0" BorderPane.alignment="CENTER">
          <children>
@@ -84,4 +74,18 @@
          </children>
       </VBox>
    </bottom>
+   <left>
+      <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="466.0" prefWidth="256.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Tus Barcos">
+               <font>
+                  <Font name="Berlin Sans FB" size="24.0" />
+               </font></Label>
+            <AnchorPane fx:id="contenedorBarcos" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" />
+         </children>
+         <rotationAxis>
+            <Point3D />
+         </rotationAxis>
+      </VBox>
+   </left>
 </BorderPane>
