@@ -7,6 +7,7 @@ import com.example.uvfpoebatallanaval.vista.ElementosDisparo;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -72,9 +73,11 @@ public class GameController {
     }
 
     private void agregarAlContenedor(Barco barco, double x, double y) {
-        List<Shape> formas = barco.crearFormas(x, y);
-        contenedorBarcos.getChildren().addAll(formas);
-        new BarcoArrastrable(barco, formas);
+        List<List<Shape>> formasPorCelda = barco.crearFormas(x, y);
+        for (List<Shape> grupo : formasPorCelda) {
+            contenedorBarcos.getChildren().addAll(grupo);
+        }
+        new BarcoArrastrable(barco, formasPorCelda);
     }
 
     private void crearTablero(GridPane tablero, Tablero modelo, boolean esPrincipal) {
@@ -133,32 +136,75 @@ public class GameController {
     }
 
     private class BarcoArrastrable implements Arrastrable {
-        private Barco barco;
-        private List<Shape> formas;
+        private final Barco barco;
+        private final List<List<Shape>> formasPorCelda;
         private double offsetX, offsetY;
 
-        public BarcoArrastrable(Barco barco, List<Shape> formas) {
+        public BarcoArrastrable(Barco barco, List<List<Shape>> formasPorCelda) {
             this.barco = barco;
-            this.formas = formas;
+            this.formasPorCelda = formasPorCelda;
 
-            for (Shape forma : formas) {
-                forma.setOnMousePressed(e -> {
-                    offsetX = e.getSceneX() - forma.localToScene(0, 0).getX();
-                    offsetY = e.getSceneY() - forma.localToScene(0, 0).getY();
-                    iniciarArrastre(offsetX, offsetY);
-                });
+            for (List<Shape> grupo : formasPorCelda) {
+                for (Shape forma : grupo) {
+                    forma.setOnMousePressed(e -> {
+                        offsetX = e.getX();
+                        offsetY = e.getY();
+                    });
 
-                forma.setOnMouseDragged(e -> {
-                    double nuevaX = e.getSceneX() - offsetX;
-                    double nuevaY = e.getSceneY() - offsetY;
-                    mover(nuevaX, nuevaY);
-                });
+                    forma.setOnMouseDragged(e -> {
+                        Point2D localPoint = contenedorBarcos.sceneToLocal(e.getSceneX(), e.getSceneY());
+                        double baseX = localPoint.getX() - offsetX;
+                        double baseY = localPoint.getY() - offsetY;
 
-                forma.setOnMouseReleased(e -> {
-                    double x = e.getSceneX() - offsetX;
-                    double y = e.getSceneY() - offsetY;
-                    soltar(x, y);
-                });
+                        for (List<Shape> subGrupo : formasPorCelda) {
+                            for (Shape f : subGrupo) {
+                                f.setLayoutX(baseX);
+                                f.setLayoutY(baseY);
+                            }
+                        }
+                    });
+
+                    forma.setOnMouseReleased(e -> {
+                        Point2D local = tableroPosicion.sceneToLocal(e.getSceneX(), e.getSceneY());
+                        int col = (int)(local.getX() / 45);
+                        int fila = (int)(local.getY() / 45);
+
+                        int tamaño = barco.getTamaño();
+                        boolean horizontal = barco.esHorizontal();
+
+                        System.out.println("Fila: " + fila + " - Columna: " + col);
+                        System.out.println("Horizontal: " + horizontal + " - Tamaño: " + tamaño);
+
+                        if (fila >= 0 && fila <= 10 && col >= 0 && col <= 10 &&
+                                ((horizontal && col + tamaño <= 11) || (!horizontal && fila + tamaño <= 11))) {
+
+                            for (int i = 0; i < formasPorCelda.size(); i++) {
+                                List<Shape> grupoFormas = formasPorCelda.get(i);
+                                StackPane celda = new StackPane();
+                                celda.setPrefSize(45, 45);
+
+                                for (Shape f : grupoFormas) {
+                                    f.setLayoutX(0);
+                                    f.setLayoutY(0);
+                                    celda.getChildren().add(f);
+                                }
+
+                                int celdaCol = col + (horizontal ? i : 0);
+                                int celdaFila = fila + (horizontal ? 0 : i);
+
+                                tableroPosicion.add(celda, celdaCol, celdaFila);
+                            }
+
+                            for (List<Shape> grupoBarco : formasPorCelda) {
+                                contenedorBarcos.getChildren().removeAll(grupoBarco);
+                            }
+
+                            System.out.println("Barco colocado desde (" + fila + "," + col + ") tamaño " + tamaño);
+                        } else {
+                            System.out.println("¡Posición inválida o fuera del tablero!");
+                        }
+                    });
+                }
             }
         }
 
@@ -167,13 +213,16 @@ public class GameController {
 
         @Override
         public void mover(double x, double y) {
-            for (Shape forma : formas) {
-                forma.setLayoutX(x);
-                forma.setLayoutY(y);
+            for (List<Shape> grupo : formasPorCelda) {
+                for (Shape forma : grupo) {
+                    forma.setLayoutX(x);
+                    forma.setLayoutY(y);
+                }
             }
         }
 
         @Override
         public void soltar(double x, double y) {}
     }
+
 }
