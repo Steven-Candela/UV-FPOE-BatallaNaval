@@ -1,5 +1,8 @@
 package com.example.uvfpoebatallanaval.modelo;
 
+import com.example.uvfpoebatallanaval.excepciones.ExcepcionCeldaOcupada;
+import com.example.uvfpoebatallanaval.excepciones.ExcepcionPosicionInvalida;
+
 import java.util.Random;
 
 /**
@@ -9,13 +12,13 @@ public class Maquina extends Jugador {
 
     private Random random;
 
-    public Maquina() {
+    public Maquina() throws ExcepcionCeldaOcupada, ExcepcionPosicionInvalida {
         super("Maquina"); // Llama al constructor de Jugador con nombre "Maquina"
         random = new Random();
         colocarFlotaAleatoriamente();
     }
 
-    private void colocarFlotaAleatoriamente() {
+    private void colocarFlotaAleatoriamente() throws ExcepcionCeldaOcupada, ExcepcionPosicionInvalida {
         for (Barco barco : getFlota()) {
             boolean colocado = false;
             while (!colocado) {
