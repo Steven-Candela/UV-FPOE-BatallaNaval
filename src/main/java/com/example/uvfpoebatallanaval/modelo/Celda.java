@@ -30,6 +30,11 @@ public class Celda implements Serializable {
         return barco;
     }
 
+    public void removerBarco() {
+        this.barco = null;
+        this.tieneBarco = false;
+    }
+
     public String recibirDisparo() {
         fueAtacada = true;
         if (!tieneBarco) {

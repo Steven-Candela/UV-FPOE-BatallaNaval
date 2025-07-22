@@ -1,5 +1,7 @@
 package com.example.uvfpoebatallanaval.controlador;
 
+import com.example.uvfpoebatallanaval.excepciones.ExcepcionCeldaOcupada;
+import com.example.uvfpoebatallanaval.excepciones.ExcepcionPosicionInvalida;
 import com.example.uvfpoebatallanaval.modelo.Arrastrable;
 import com.example.uvfpoebatallanaval.modelo.Barco;
 import com.example.uvfpoebatallanaval.modelo.Tablero;
@@ -175,9 +177,13 @@ public class GameController {
                         System.out.println("Fila: " + fila + " - Columna: " + col);
                         System.out.println("Horizontal: " + horizontal + " - Tamaño: " + tamaño);
 
-                        if (fila >= 0 && fila <= 10 && col >= 0 && col <= 10 &&
-                                ((horizontal && col + tamaño <= 11) || (!horizontal && fila + tamaño <= 11))) {
+                        tableroJugador.removerBarco(barco);
 
+                        try {
+                            // Validación con el modelo: ¿Cabe y no hay barcos?
+                            tableroJugador.colocarBarco(barco, fila, col);
+
+                            // Dibujar las formas en el GridPane
                             for (int i = 0; i < formasPorCelda.size(); i++) {
                                 List<Shape> grupoFormas = formasPorCelda.get(i);
                                 StackPane celda = new StackPane();
@@ -195,13 +201,22 @@ public class GameController {
                                 tableroPosicion.add(celda, celdaCol, celdaFila);
                             }
 
-                            for (List<Shape> grupoBarco : formasPorCelda) {
-                                contenedorBarcos.getChildren().removeAll(grupoBarco);
-                            }
+                            // Eliminar del contenedor de arrastre
+                            contenedorBarcos.getChildren().removeAll(
+                                    formasPorCelda.stream().flatMap(List::stream).toList()
+                            );
 
                             System.out.println("Barco colocado desde (" + fila + "," + col + ") tamaño " + tamaño);
-                        } else {
-                            System.out.println("¡Posición inválida o fuera del tablero!");
+
+                        } catch (ExcepcionPosicionInvalida | ExcepcionCeldaOcupada ex) {
+                            System.out.println("Error: " + ex.getMessage());
+
+                            // Opcional: mensaje visual
+                            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+                            alert.setTitle("Colocación inválida");
+                            alert.setHeaderText("No se puede colocar el barco");
+                            alert.setContentText(ex.getMessage());
+                            alert.showAndWait();
                         }
                     });
                 }

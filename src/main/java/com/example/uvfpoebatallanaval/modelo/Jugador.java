@@ -1,5 +1,8 @@
 package com.example.uvfpoebatallanaval.modelo;
 
+import com.example.uvfpoebatallanaval.excepciones.ExcepcionCeldaOcupada;
+import com.example.uvfpoebatallanaval.excepciones.ExcepcionPosicionInvalida;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +41,7 @@ public class Jugador implements Serializable {
         flota.add(new Barco("fragata", false));
     }
 
-    public boolean colocarBarco(Barco barco, int fila, int col) {
+    public boolean colocarBarco(Barco barco, int fila, int col) throws ExcepcionCeldaOcupada, ExcepcionPosicionInvalida {
         return tablero.colocarBarco(barco, fila, col);
     }
 
