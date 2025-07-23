@@ -123,15 +123,33 @@ public class GameController {
                     celda.setOnMouseClicked(e -> {
                         String resultado = modelo.disparar(f, c);
 
-                        List<Shape> formas = switch (resultado) {
-                            case "agua" -> ElementosDisparo.agua(0, 0);
-                            case "tocado" -> ElementosDisparo.tocado(0, 0);
-                            case "hundido" -> ElementosDisparo.hundido(0, 0);
-                            default -> null;
-                        };
+                        if (resultado.equals("hundido")) {
+                            Barco barco = modelo.getCelda(f, c).getBarco();
 
-                        if (formas != null) {
-                            celda.getChildren().addAll(formas);
+                            // Se buscan todas las celdas del barco en el tablero
+                            for (int i = 0; i < 10; i++) {
+                                for (int j = 0; j < 10; j++) {
+                                    Celda celdaModelo = modelo.getCelda(i, j);
+                                    if (celdaModelo.getBarco() == barco) {
+                                        Node nodo = obtenerCelda(tableroPrincipal, i + 1, j + 1);
+                                        if (nodo instanceof StackPane pane) {
+                                            pane.getChildren().removeIf(n -> n instanceof Shape);
+                                            pane.getChildren().addAll(ElementosDisparo.hundido(0, 0));
+                                        }
+                                    }
+                                }
+                            }
+
+                        } else {
+                            List<Shape> formas = switch (resultado) {
+                                case "agua" -> ElementosDisparo.agua(0, 0);
+                                case "tocado" -> ElementosDisparo.tocado(0, 0);
+                                default -> null;
+                            };
+
+                            if (formas != null) {
+                                celda.getChildren().addAll(formas);
+                            }
                         }
                     });
                 }

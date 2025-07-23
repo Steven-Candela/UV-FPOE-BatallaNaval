@@ -10,6 +10,7 @@ public class Barco {
     private String tipo;
     private int tamaño;
     private boolean horizontal;
+    private int impactos = 0;
 
     public Barco(String tipo, boolean horizontal) {
         this.tipo = tipo;
@@ -123,4 +124,8 @@ public class Barco {
     }
 
     public void setOrientacion(boolean horizontal) {this.horizontal = horizontal;}
+
+    public void registrarImpacto() {impactos++;}
+
+    public boolean estaHundido() {return impactos >= tamaño;}
 }

@@ -37,10 +37,12 @@ public class Celda implements Serializable {
 
     public String recibirDisparo() {
         fueAtacada = true;
+
         if (!tieneBarco) {
             return "agua";
         } else {
-            return "tocado";
+            barco.registrarImpacto();
+            return barco.estaHundido() ? "hundido" : "tocado";
         }
     }
 }
