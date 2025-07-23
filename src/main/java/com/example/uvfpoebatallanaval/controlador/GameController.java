@@ -4,6 +4,7 @@ import com.example.uvfpoebatallanaval.excepciones.ExcepcionCeldaOcupada;
 import com.example.uvfpoebatallanaval.excepciones.ExcepcionPosicionInvalida;
 import com.example.uvfpoebatallanaval.modelo.Arrastrable;
 import com.example.uvfpoebatallanaval.modelo.Barco;
+import com.example.uvfpoebatallanaval.modelo.Celda;
 import com.example.uvfpoebatallanaval.modelo.Tablero;
 import com.example.uvfpoebatallanaval.vista.ElementosDisparo;
 import javafx.event.ActionEvent;
@@ -22,11 +23,13 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameController {
     private Tablero tableroJugador;
     private Tablero tableroMaquina;
+    private boolean juegoIniciado = false;
 
     @FXML private GridPane tableroPosicion;
     @FXML private GridPane tableroPrincipal;
@@ -39,8 +42,8 @@ public class GameController {
         crearTablero(tableroPosicion, tableroJugador, false);
         crearTablero(tableroPrincipal, tableroMaquina, true);
         inicializarBarcos();
+        colocarBarcosMaquina();
     }
-
 
     @FXML
     private void onActionVolverMenu(ActionEvent event) throws IOException {
@@ -135,6 +138,110 @@ public class GameController {
                 tablero.add(celda, col + 1, fila + 1);
             }
         }
+    }
+
+    private void colocarBarcosMaquina() {
+        Barco[] barcos = {
+                new Barco("portaaviones", true),
+                new Barco("submarino", false),
+                new Barco("submarino", true),
+                new Barco("destructor", true),
+                new Barco("destructor", false),
+                new Barco("destructor", true),
+                new Barco("fragata", false),
+                new Barco("fragata", true),
+                new Barco("fragata", true),
+                new Barco("fragata", false),
+        };
+
+        for (Barco barco : barcos) {
+            boolean colocado = false;
+
+            while (!colocado) {
+                boolean horizontal = Math.random() < 0.5;
+                barco.setOrientacion(horizontal);
+
+                int fila = (int) (Math.random() * 10);
+                int col = (int) (Math.random() * 10);
+
+                if (horizontal && col + barco.getTamaño() > 10) continue;
+                if (!horizontal && fila + barco.getTamaño() > 10) continue;
+
+                try {
+                    tableroMaquina.colocarBarco(barco, fila, col);
+                    colocado = true;
+                } catch (ExcepcionPosicionInvalida | ExcepcionCeldaOcupada e) {}
+            }
+        }
+    }
+
+    @FXML
+    private void onActionVerTableroEnemigo() {
+        if (juegoIniciado) {
+            javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+            alerta.setTitle("Tablero Enemigo");
+            alerta.setHeaderText("Ya no puedes ver el tablero enemigo");
+            alerta.setContentText("El juego ya ha comenzado.");
+            alerta.showAndWait();
+            return;
+        }
+
+        List<Barco> barcosDibujados = new ArrayList<>();
+
+        for (int fila = 0; fila < 10; fila++) {
+            for (int col = 0; col < 10; col++) {
+                Celda modeloCelda = tableroMaquina.getCelda(fila, col);
+
+                if (modeloCelda.tieneBarco()) {
+                    Barco barco = modeloCelda.getBarco();
+
+                    // Para evitar volver a dibujar el mismo barco
+                    if (barcosDibujados.contains(barco)) continue;
+                    barcosDibujados.add(barco);
+
+                    // Coordenadas iniciales
+                    double baseX = 0;
+                    double baseY = 0;
+
+                    // Encuentra la primera celda donde está el barco
+                    for (int i = 0; i < 10 && baseX == 0 && baseY == 0; i++) {
+                        for (int j = 0; j < 10; j++) {
+                            if (tableroMaquina.getCelda(i, j).getBarco() == barco) {
+                                baseX = j * 45;
+                                baseY = i * 45;
+                                break;
+                            }
+                        }
+                    }
+
+                    List<List<Shape>> formas = barco.crearFormas(baseX, baseY);
+
+                    for (int i = 0; i < formas.size(); i++) {
+                        int celdaFila = fila + (barco.esHorizontal() ? 0 : i);
+                        int celdaCol = col + (barco.esHorizontal() ? i : 0);
+
+                        Node node = obtenerCelda(tableroPrincipal, celdaFila + 1, celdaCol + 1);
+                        if (node instanceof StackPane celdaPane) {
+                            for (Shape forma : formas.get(i)) {
+                                forma.setLayoutX(0);
+                                forma.setLayoutY(0);
+                                celdaPane.getChildren().add(forma);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private Node obtenerCelda(GridPane grid, int fila, int columna) {
+        for (Node node : grid.getChildren()) {
+            if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
+                    GridPane.getRowIndex(node) == fila && GridPane.getColumnIndex(node) == columna) {
+                return node;
+            }
+        }
+        return null;
     }
 
     private class BarcoArrastrable implements Arrastrable {
@@ -239,5 +346,4 @@ public class GameController {
         @Override
         public void soltar(double x, double y) {}
     }
-
 }

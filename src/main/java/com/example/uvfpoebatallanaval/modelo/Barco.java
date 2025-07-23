@@ -121,4 +121,6 @@ public class Barco {
     public String getTipo() {
         return tipo;
     }
+
+    public void setOrientacion(boolean horizontal) {this.horizontal = horizontal;}
 }
