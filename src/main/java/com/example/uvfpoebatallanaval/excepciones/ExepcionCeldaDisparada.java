@@ -1,7 +1,7 @@
 package com.example.uvfpoebatallanaval.excepciones;
 
-public class CeldaDisparada extends RuntimeException {
-    public CeldaDisparada(String message) {
+public class ExepcionCeldaDisparada extends RuntimeException {
+    public ExepcionCeldaDisparada(String message) {
         super(message);
     }
 }
