@@ -261,6 +261,19 @@ public class GameController {
         return null;
     }
 
+    private boolean verificarBarcosColocados() {
+        int totalCeldasOcupadas = 0;
+        for (int fila = 0; fila < 10; fila++) {
+            for (int col = 0; col < 10; col++) {
+                if (tableroJugador.getCelda(fila, col).tieneBarco()) {
+                    totalCeldasOcupadas++;
+                }
+            }
+        }
+        System.out.println("Celdas ocupadas: " + totalCeldasOcupadas);
+        return totalCeldasOcupadas == 21;
+    }
+
     private class BarcoArrastrable implements Arrastrable {
         private final Barco barco;
         private final List<List<Shape>> formasPorCelda;
@@ -292,22 +305,24 @@ public class GameController {
 
                     forma.setOnMouseReleased(e -> {
                         Point2D local = tableroPosicion.sceneToLocal(e.getSceneX(), e.getSceneY());
-                        int col = (int)(local.getX() / 45);
-                        int fila = (int)(local.getY() / 45);
+                        int col = (int)(local.getX() / 45) - 1;
+                        int fila = (int)(local.getY() / 45) - 1;
 
                         int tamaño = barco.getTamaño();
                         boolean horizontal = barco.esHorizontal();
 
-                        System.out.println("Fila: " + fila + " - Columna: " + col);
-                        System.out.println("Horizontal: " + horizontal + " - Tamaño: " + tamaño);
-
-                        tableroJugador.removerBarco(barco);
-
                         try {
-                            // Validación con el modelo: ¿Cabe y no hay barcos?
+                            if (col < 0 || fila < 0 || col >= 10 || fila >= 10) {
+                                throw new ExcepcionPosicionInvalida("El barco se sale del tablero en (" + fila + ", " + col + ")");
+                            }
+
+                            if ((horizontal && col + tamaño > 10) || (!horizontal && fila + tamaño > 10)) {
+                                throw new ExcepcionPosicionInvalida("El barco se sale del tablero en (" + fila + ", " + col + ")");
+                            }
+
+                            tableroJugador.removerBarco(barco);
                             tableroJugador.colocarBarco(barco, fila, col);
 
-                            // Dibujar las formas en el GridPane
                             for (int i = 0; i < formasPorCelda.size(); i++) {
                                 List<Shape> grupoFormas = formasPorCelda.get(i);
                                 StackPane celda = new StackPane();
@@ -322,25 +337,33 @@ public class GameController {
                                 int celdaCol = col + (horizontal ? i : 0);
                                 int celdaFila = fila + (horizontal ? 0 : i);
 
-                                tableroPosicion.add(celda, celdaCol, celdaFila);
+                                tableroPosicion.add(celda, celdaCol + 1, celdaFila + 1);
                             }
-
-                            // Eliminar del contenedor de arrastre
                             contenedorBarcos.getChildren().removeAll(
                                     formasPorCelda.stream().flatMap(List::stream).toList()
                             );
 
                             System.out.println("Barco colocado desde (" + fila + "," + col + ") tamaño " + tamaño);
+                            // Verificar si ya están todos los barcos colocados
+                            if (verificarBarcosColocados()) {
+                                javafx.scene.control.Alert confirmacion = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+                                confirmacion.setTitle("¿Iniciar juego?");
+                                confirmacion.setHeaderText("Todos los barcos han sido colocados");
+                                confirmacion.setContentText("¿Deseas empezar a jugar?");
 
+                                confirmacion.showAndWait().ifPresent(response -> {
+                                    juegoIniciado = true;
+                                    System.out.println("El juego ha comenzado");
+                                });
+                            }
                         } catch (ExcepcionPosicionInvalida | ExcepcionCeldaOcupada ex) {
                             System.out.println("Error: " + ex.getMessage());
 
-                            // Opcional: mensaje visual
-                            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
-                            alert.setTitle("Colocación inválida");
-                            alert.setHeaderText("No se puede colocar el barco");
-                            alert.setContentText(ex.getMessage());
-                            alert.showAndWait();
+                            javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+                            alerta.setTitle("Colocación inválida");
+                            alerta.setHeaderText("No se pudo colocar el barco");
+                            alerta.setContentText(ex.getMessage());
+                            alerta.showAndWait();
                         }
                     });
                 }
