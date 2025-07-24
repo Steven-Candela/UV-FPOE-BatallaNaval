@@ -18,7 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
-
+import com.example.uvfpoebatallanaval.excepciones.ExepcionCeldaDisparada;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,50 +117,67 @@ public class GameController {
 
                 int f = fila, c = col;
 
-                // Si es el tablero principal (de la máquina), se habilita el disparo
+// Si es el tablero principal (de la máquina), se habilita el disparo
                 if (esPrincipal) {
                     celda.setOnMouseClicked(e -> {
                         // Para evitar que el humano dispare cuando no es su turno
                         if (!(estrategiaTurno instanceof TurnoHumano)) return;
 
-                        String resultado = modelo.disparar(f, c);
+                        try {
+                            Celda celdaModelo = modelo.getCelda(f, c);
 
-                        if (resultado.equals("hundido")) {
-                            Barco barco = modelo.getCelda(f, c).getBarco();
+                            // Verificar si ya se disparó en esta celda
+                            if (celdaModelo.fueAtacada()) {
+                                throw new ExepcionCeldaDisparada("Ya disparaste en esta celda.");
+                            }
 
-                            for (int i = 0; i < 10; i++) {
-                                for (int j = 0; j < 10; j++) {
-                                    Celda celdaModelo = modelo.getCelda(i, j);
-                                    if (celdaModelo.getBarco() == barco) {
-                                        Node nodo = obtenerCelda(tableroPrincipal, i + 1, j + 1);
-                                        if (nodo instanceof StackPane pane) {
-                                            pane.getChildren().removeIf(n -> n instanceof Shape);
-                                            pane.getChildren().addAll(ElementosDisparo.hundido(0, 0));
+                            // Marcar disparo y obtener resultado
+                            String resultado = celdaModelo.recibirDisparo();
+
+                            if (resultado.equals("hundido")) {
+                                Barco barco = celdaModelo.getBarco();
+                                for (int i = 0; i < 10; i++) {
+                                    for (int j = 0; j < 10; j++) {
+                                        Celda otra = modelo.getCelda(i, j);
+                                        if (otra.getBarco() == barco) {
+                                            Node nodo = obtenerCelda(tableroPrincipal, i + 1, j + 1);
+                                            if (nodo instanceof StackPane pane) {
+                                                pane.getChildren().removeIf(n -> n instanceof Shape);
+                                                pane.getChildren().addAll(ElementosDisparo.hundido(0, 0));
+                                            }
                                         }
                                     }
                                 }
+                                return;
+                            } else {
+                                List<Shape> formas = switch (resultado) {
+                                    case "agua" -> ElementosDisparo.agua(0, 0);
+                                    case "tocado" -> ElementosDisparo.tocado(0, 0);
+                                    default -> null;
+                                };
+                                if (formas != null) {
+                                    celda.getChildren().addAll(formas);
+                                }
                             }
-                            return;
 
-                        } else {
-                            List<Shape> formas = switch (resultado) {
-                                case "agua" -> ElementosDisparo.agua(0, 0);
-                                case "tocado" -> ElementosDisparo.tocado(0, 0);
-                                default -> null;
-                            };
-
-                            if (formas != null) {
-                                celda.getChildren().addAll(formas);
+                            // Cambiar turno (si fue agua)
+                            if (resultado.equals("agua")) {
+                                setEstrategiaTurno(new TurnoMaquina());
+                                ejecutarTurnoActual();
                             }
-                        }
 
-                        // Cambiar turno (si fue agua)
-                        if (resultado.equals("agua")) {
-                            setEstrategiaTurno(new TurnoMaquina());
-                            ejecutarTurnoActual();
+                        } catch (ExepcionCeldaDisparada ex) {
+                            System.out.println("Error: " + ex.getMessage());
+
+                            javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+                            alerta.setTitle("Celda disparada");
+                            alerta.setHeaderText("No se pudo disparar ahí, ya disparaste en esta celda");
+                            alerta.setContentText(ex.getMessage());
+                            alerta.showAndWait();
                         }
                     });
                 }
+
                 tablero.add(celda, col + 1, fila + 1);
             }
         }
