@@ -2,10 +2,7 @@ package com.example.uvfpoebatallanaval.controlador;
 
 import com.example.uvfpoebatallanaval.excepciones.ExcepcionCeldaOcupada;
 import com.example.uvfpoebatallanaval.excepciones.ExcepcionPosicionInvalida;
-import com.example.uvfpoebatallanaval.modelo.Arrastrable;
-import com.example.uvfpoebatallanaval.modelo.Barco;
-import com.example.uvfpoebatallanaval.modelo.Celda;
-import com.example.uvfpoebatallanaval.modelo.Tablero;
+import com.example.uvfpoebatallanaval.modelo.*;
 import com.example.uvfpoebatallanaval.vista.ElementosDisparo;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,6 +27,7 @@ public class GameController {
     private Tablero tableroJugador;
     private Tablero tableroMaquina;
     private boolean juegoIniciado = false;
+    private EstrategiaTurno estrategiaTurno;
 
     @FXML private GridPane tableroPosicion;
     @FXML private GridPane tableroPrincipal;
@@ -43,6 +41,7 @@ public class GameController {
         crearTablero(tableroPrincipal, tableroMaquina, true);
         inicializarBarcos();
         colocarBarcosMaquina();
+        habilitarTableroEnemigo(false);
     }
 
     @FXML
@@ -121,12 +120,14 @@ public class GameController {
                 // Si es el tablero principal (de la máquina), se habilita el disparo
                 if (esPrincipal) {
                     celda.setOnMouseClicked(e -> {
+                        // Para evitar que el humano dispare cuando no es su turno
+                        if (!(estrategiaTurno instanceof TurnoHumano)) return;
+
                         String resultado = modelo.disparar(f, c);
 
                         if (resultado.equals("hundido")) {
                             Barco barco = modelo.getCelda(f, c).getBarco();
 
-                            // Se buscan todas las celdas del barco en el tablero
                             for (int i = 0; i < 10; i++) {
                                 for (int j = 0; j < 10; j++) {
                                     Celda celdaModelo = modelo.getCelda(i, j);
@@ -139,6 +140,8 @@ public class GameController {
                                     }
                                 }
                             }
+                            return;
+
                         } else {
                             List<Shape> formas = switch (resultado) {
                                 case "agua" -> ElementosDisparo.agua(0, 0);
@@ -149,6 +152,12 @@ public class GameController {
                             if (formas != null) {
                                 celda.getChildren().addAll(formas);
                             }
+                        }
+
+                        // Cambiar turno (si fue agua)
+                        if (resultado.equals("agua")) {
+                            setEstrategiaTurno(new TurnoMaquina());
+                            ejecutarTurnoActual();
                         }
                     });
                 }
@@ -189,6 +198,16 @@ public class GameController {
                     colocado = true;
                 } catch (ExcepcionPosicionInvalida | ExcepcionCeldaOcupada e) {}
             }
+        }
+    }
+
+    public void setEstrategiaTurno(EstrategiaTurno estrategia) {
+        this.estrategiaTurno = estrategia;
+    }
+
+    public void ejecutarTurnoActual() {
+        if (estrategiaTurno != null) {
+            estrategiaTurno.ejecutarTurno(this);
         }
     }
 
@@ -251,7 +270,7 @@ public class GameController {
         }
     }
 
-    private Node obtenerCelda(GridPane grid, int fila, int columna) {
+    public Node obtenerCelda(GridPane grid, int fila, int columna) {
         for (Node node : grid.getChildren()) {
             if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
                     GridPane.getRowIndex(node) == fila && GridPane.getColumnIndex(node) == columna) {
@@ -272,6 +291,23 @@ public class GameController {
         }
         System.out.println("Celdas ocupadas: " + totalCeldasOcupadas);
         return totalCeldasOcupadas == 21;
+    }
+
+    public void habilitarTableroEnemigo(boolean habilitar) {
+        for (Node node : tableroPrincipal.getChildren()) {
+            Integer fila = GridPane.getRowIndex(node);
+            Integer col = GridPane.getColumnIndex(node);
+
+            if (fila == null || col == null || fila == 0 || col == 0) continue; // omitir etiquetas
+
+            if (node instanceof StackPane celdaPane) {
+                if (habilitar) {
+                    celdaPane.setDisable(false);
+                } else {
+                    celdaPane.setDisable(true);
+                }
+            }
+        }
     }
 
     private class BarcoArrastrable implements Arrastrable {
@@ -353,6 +389,9 @@ public class GameController {
 
                                 confirmacion.showAndWait().ifPresent(response -> {
                                     juegoIniciado = true;
+                                    habilitarTableroEnemigo(true);
+                                    setEstrategiaTurno(new TurnoHumano(GameController.this));
+                                    ejecutarTurnoActual();
                                     System.out.println("El juego ha comenzado");
                                 });
                             }
@@ -385,5 +424,13 @@ public class GameController {
 
         @Override
         public void soltar(double x, double y) {}
+    }
+
+    public Tablero getTableroJugador() {
+        return tableroJugador;
+    }
+
+    public GridPane getTableroPosicion() {
+        return tableroPosicion;
     }
 }
