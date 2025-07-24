@@ -1,48 +1,33 @@
 package com.example.uvfpoebatallanaval.modelo;
 
-import java.io.Serializable;
-
-public class Celda implements Serializable {
-    private boolean tieneBarco;
-    private boolean fueAtacada;
-    private Barco barco;
-
-    public Celda() {
-        this.tieneBarco = false;
-        this.fueAtacada = false;
-        this.barco = null;
-    }
+public class Celda {
+    private boolean tieneBarco = false;
+    private boolean disparado = false;
 
     public boolean tieneBarco() {
         return tieneBarco;
     }
 
-    public void colocarBarco(Barco barco) {
-        this.barco = barco;
-        this.tieneBarco = true;
+    public void setBarco(boolean tieneBarco) {
+        this.tieneBarco = tieneBarco;
     }
 
-    public boolean fueAtacada() {
-        return fueAtacada;
+    public boolean isDisparado() {
+        return disparado;
     }
+
+    public void setDisparado(boolean disparado) {
+        this.disparado = disparado;
+    }
+    // En Celda.java
+    private Barco barco;
 
     public Barco getBarco() {
         return barco;
     }
 
-    public void removerBarco() {
-        this.barco = null;
-        this.tieneBarco = false;
+    public void setBarco(Barco barco) {
+        this.barco = barco;
     }
 
-    public String recibirDisparo() {
-        fueAtacada = true;
-
-        if (!tieneBarco) {
-            return "agua";
-        } else {
-            barco.registrarImpacto();
-            return barco.estaHundido() ? "hundido" : "tocado";
-        }
-    }
 }

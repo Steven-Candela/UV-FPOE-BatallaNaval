@@ -7,20 +7,22 @@ import com.example.uvfpoebatallanaval.modelo.Barco;
 import com.example.uvfpoebatallanaval.modelo.Celda;
 import com.example.uvfpoebatallanaval.modelo.Tablero;
 import com.example.uvfpoebatallanaval.vista.ElementosDisparo;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
+import javafx.scene.shape.*;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,12 +32,15 @@ public class GameController {
     private Tablero tableroJugador;
     private Tablero tableroMaquina;
     private boolean juegoIniciado = false;
+    private boolean turnoJugador = true;
+
 
     @FXML private GridPane tableroPosicion;
     @FXML private GridPane tableroPrincipal;
     @FXML private AnchorPane contenedorBarcos;
 
-    public void initialize() {
+
+    public void initialize() throws ExcepcionCeldaOcupada, ExcepcionPosicionInvalida {
         tableroJugador = new Tablero();
         tableroMaquina = new Tablero();
 
@@ -44,6 +49,7 @@ public class GameController {
         inicializarBarcos();
         colocarBarcosMaquina();
     }
+
 
     @FXML
     private void onActionVolverMenu(ActionEvent event) throws IOException {
@@ -116,49 +122,99 @@ public class GameController {
 
                 celda.getChildren().add(fondo);
 
-                int f = fila, c = col;
+                int f = fila;
+                int c = col;
 
-                // Si es el tablero principal (de la máquina), se habilita el disparo
                 if (esPrincipal) {
+                    // Solo permitir disparar si el juego ha comenzado y es el turno del jugador
                     celda.setOnMouseClicked(e -> {
-                        String resultado = modelo.disparar(f, c);
+                        if (!juegoIniciado || !turnoJugador) return;
+                        Shape marca;
+                        Celda objetivo = modelo.getCelda(f, c);
+                        if (!objetivo.isDisparado()) {
+                            objetivo.setDisparado(true);
+                            marca = crearMarcaDisparo(objetivo.tieneBarco());
+                            celda.getChildren().add(marca);
 
-                        if (resultado.equals("hundido")) {
-                            Barco barco = modelo.getCelda(f, c).getBarco();
-
-                            // Se buscan todas las celdas del barco en el tablero
-                            for (int i = 0; i < 10; i++) {
-                                for (int j = 0; j < 10; j++) {
-                                    Celda celdaModelo = modelo.getCelda(i, j);
-                                    if (celdaModelo.getBarco() == barco) {
-                                        Node nodo = obtenerCelda(tableroPrincipal, i + 1, j + 1);
-                                        if (nodo instanceof StackPane pane) {
-                                            pane.getChildren().removeIf(n -> n instanceof Shape);
-                                            pane.getChildren().addAll(ElementosDisparo.hundido(0, 0));
-                                        }
-                                    }
+                            if (objetivo.tieneBarco()) {
+                                if (modelo.todosLosBarcosHundidos()) {
+                                    mostrarAlerta("¡Victoria!", "¡Has ganado!");
+                                    juegoIniciado = false;
+                                    return;
                                 }
                             }
 
-                        } else {
-                            List<Shape> formas = switch (resultado) {
-                                case "agua" -> ElementosDisparo.agua(0, 0);
-                                case "tocado" -> ElementosDisparo.tocado(0, 0);
-                                default -> null;
-                            };
-
-                            if (formas != null) {
-                                celda.getChildren().addAll(formas);
-                            }
+                            // Cambia el turno a la máquina
+                            turnoJugador = false;
+                            turnoMaquina();
                         }
                     });
                 }
+
                 tablero.add(celda, col + 1, fila + 1);
             }
         }
     }
 
-    private void colocarBarcosMaquina() {
+    public Shape crearMarcaDisparo(boolean acierto) {
+        if (acierto) {
+            // Círculo rojo para acierto
+            Circle circulo = new Circle(15);
+            circulo.setStroke(Color.RED);
+            circulo.setFill(Color.TRANSPARENT);
+            return circulo;
+        } else {
+            // X negra para fallo usando Path
+            Path cruz = new Path();
+            cruz.getElements().addAll(
+                    new MoveTo(5, 5),
+                    new LineTo(40, 40),
+                    new MoveTo(5, 40),
+                    new LineTo(40, 5)
+            );
+            cruz.setStroke(Color.BLACK);
+            return cruz;
+        }
+    }
+
+    private void mostrarAlerta(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+
+    private void turnoMaquina() {
+        PauseTransition pausa = new PauseTransition(Duration.seconds(1)); // Para que no sea instantáneo
+        pausa.setOnFinished(e -> {
+            // Lógica sencilla: la máquina dispara a una celda aleatoria no disparada
+            for (int fila = 0; fila < 6; fila++) {
+                for (int col = 0; col < 6; col++) {
+                    Celda celda = tableroJugador.getCelda(fila, col);
+                    if (!celda.isDisparado()) {
+                        celda.setDisparado(true);
+                        System.out.println("Máquina disparó en: " + fila + ", " + col);
+                                // Aquí podrías también marcar el disparo visualmente si quieres
+
+                        if (celda.tieneBarco()) {
+                            if (tableroJugador.todosLosBarcosHundidos()) {
+                                System.out.println("¡Perdiste!");
+                            }
+                        }
+
+                        turnoJugador = true; // Regresa el turno al jugador
+                        return;
+                    }
+                }
+            }
+        });
+        pausa.play();
+    }
+
+
+    private void colocarBarcosMaquina() throws ExcepcionPosicionInvalida, ExcepcionCeldaOcupada {
         Barco[] barcos = {
                 new Barco("portaaviones", true),
                 new Barco("submarino", false),
@@ -184,11 +240,8 @@ public class GameController {
 
                 if (horizontal && col + barco.getTamaño() > 10) continue;
                 if (!horizontal && fila + barco.getTamaño() > 10) continue;
-
-                try {
-                    tableroMaquina.colocarBarco(barco, fila, col);
-                    colocado = true;
-                } catch (ExcepcionPosicionInvalida | ExcepcionCeldaOcupada e) {}
+                tableroMaquina.colocarBarco(barco, fila, col);
+                colocado = true;
             }
         }
     }
@@ -196,7 +249,7 @@ public class GameController {
     @FXML
     private void onActionVerTableroEnemigo() {
         if (juegoIniciado) {
-            javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+            Alert alerta = new Alert(Alert.AlertType.INFORMATION);
             alerta.setTitle("Tablero Enemigo");
             alerta.setHeaderText("Ya no puedes ver el tablero enemigo");
             alerta.setContentText("El juego ya ha comenzado.");
@@ -267,7 +320,7 @@ public class GameController {
         private final List<List<Shape>> formasPorCelda;
         private double offsetX, offsetY;
 
-        public BarcoArrastrable(Barco barco, List<List<Shape>> formasPorCelda) {
+        public BarcoArrastrable(Barco barco, List<List<Shape>> formasPorCelda){
             this.barco = barco;
             this.formasPorCelda = formasPorCelda;
 
@@ -277,7 +330,6 @@ public class GameController {
                         offsetX = e.getX();
                         offsetY = e.getY();
                     });
-
                     forma.setOnMouseDragged(e -> {
                         Point2D localPoint = contenedorBarcos.sceneToLocal(e.getSceneX(), e.getSceneY());
                         double baseX = localPoint.getX() - offsetX;
@@ -303,46 +355,33 @@ public class GameController {
                         System.out.println("Horizontal: " + horizontal + " - Tamaño: " + tamaño);
 
                         tableroJugador.removerBarco(barco);
+                        tableroJugador.colocarBarco(barco, fila, col);
 
-                        try {
-                            // Validación con el modelo: ¿Cabe y no hay barcos?
-                            tableroJugador.colocarBarco(barco, fila, col);
+                        // Dibujar las formas en el GridPane
+                        for (int i = 0; i < formasPorCelda.size(); i++) {
+                            List<Shape> grupoFormas = formasPorCelda.get(i);
+                            StackPane celda = new StackPane();
+                            celda.setPrefSize(45, 45);
 
-                            // Dibujar las formas en el GridPane
-                            for (int i = 0; i < formasPorCelda.size(); i++) {
-                                List<Shape> grupoFormas = formasPorCelda.get(i);
-                                StackPane celda = new StackPane();
-                                celda.setPrefSize(45, 45);
-
-                                for (Shape f : grupoFormas) {
-                                    f.setLayoutX(0);
-                                    f.setLayoutY(0);
-                                    celda.getChildren().add(f);
-                                }
-
-                                int celdaCol = col + (horizontal ? i : 0);
-                                int celdaFila = fila + (horizontal ? 0 : i);
-
-                                tableroPosicion.add(celda, celdaCol, celdaFila);
+                            for (Shape f : grupoFormas) {
+                                f.setLayoutX(0);
+                                f.setLayoutY(0);
+                                celda.getChildren().add(f);
                             }
 
-                            // Eliminar del contenedor de arrastre
-                            contenedorBarcos.getChildren().removeAll(
-                                    formasPorCelda.stream().flatMap(List::stream).toList()
-                            );
+                            int celdaCol = col + (horizontal ? i : 0);
+                            int celdaFila = fila + (horizontal ? 0 : i);
 
-                            System.out.println("Barco colocado desde (" + fila + "," + col + ") tamaño " + tamaño);
-
-                        } catch (ExcepcionPosicionInvalida | ExcepcionCeldaOcupada ex) {
-                            System.out.println("Error: " + ex.getMessage());
-
-                            // Opcional: mensaje visual
-                            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
-                            alert.setTitle("Colocación inválida");
-                            alert.setHeaderText("No se puede colocar el barco");
-                            alert.setContentText(ex.getMessage());
-                            alert.showAndWait();
+                            tableroPosicion.add(celda, celdaCol, celdaFila);
                         }
+
+                        // Eliminar del contenedor de arrastre
+                        contenedorBarcos.getChildren().removeAll(
+                                formasPorCelda.stream().flatMap(List::stream).toList()
+                        );
+
+                        System.out.println("Barco colocado desde (" + fila + "," + col + ") tamaño " + tamaño);
+
                     });
                 }
             }
