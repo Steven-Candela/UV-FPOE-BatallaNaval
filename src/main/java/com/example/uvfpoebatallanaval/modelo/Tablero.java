@@ -22,7 +22,7 @@ public class Tablero implements Serializable {
     }
 
     public boolean cumpleLimites(int fila, int col) {
-        return fila > 0 && fila <= 10 && col > 0 && col <= 10;
+        return fila >= 0 && fila < 11 && col >= 0 && col < 11;
     }
 
     public boolean colocarBarco(Barco barco, int filaInicio, int colInicio)

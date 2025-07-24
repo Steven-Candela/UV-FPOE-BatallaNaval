@@ -139,7 +139,6 @@ public class GameController {
                                     }
                                 }
                             }
-
                         } else {
                             List<Shape> formas = switch (resultado) {
                                 case "agua" -> ElementosDisparo.agua(0, 0);
