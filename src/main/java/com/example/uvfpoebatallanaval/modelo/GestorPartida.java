@@ -14,7 +14,7 @@ public class GestorPartida {
                                       String textoDisparo, String colorDisparo) {
         try {
             Serializador.guardarEstado(jugador, maquina, archivoTableros);
-            ArchivoPlano.guardarInfoJugadorAvanzado(nickname, barcosHundidos, textoTurno, colorTurno, textoDisparo, colorDisparo, archivoPlano);
+            ArchivoPlano.guardarInfoJugador(nickname, barcosHundidos, textoTurno, colorTurno, textoDisparo, colorDisparo, archivoPlano);
         } catch (IOException e) {
             System.err.println("Error al guardar partida: " + e.getMessage());
         }

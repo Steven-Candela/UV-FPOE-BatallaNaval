@@ -41,6 +41,9 @@ public class GameController {
     @FXML private Label turnoLabel;
 
     @FXML private Label disparoLabel;
+    public Label getDisparoLabel() {
+        return disparoLabel;
+    }
 
     public static GestorPartida.EstadoJuego estadoGuardado = null;
 
@@ -334,15 +337,15 @@ public class GameController {
                             if (disparoLabel != null) {
                                 switch (resultado) {
                                     case "agua" -> {
-                                        disparoLabel.setText("Disparo: AGUA");
+                                        disparoLabel.setText("Disparo del jugador: AGUA");
                                         disparoLabel.setStyle("-fx-text-fill: blue;");
                                     }
                                     case "tocado" -> {
-                                        disparoLabel.setText("Disparo: ¡TOCADO!");
+                                        disparoLabel.setText("Disparo del jugador: ¡TOCADO!");
                                         disparoLabel.setStyle("-fx-text-fill: red;");
                                     }
                                     case "hundido" -> {
-                                        disparoLabel.setText("Disparo: ¡HUNDIDO!");
+                                        disparoLabel.setText("Disparo del jugador: ¡HUNDIDO!");
                                         disparoLabel.setStyle("-fx-text-fill: black;");
                                     }
                                     default -> disparoLabel.setText("Disparo desconocido");
@@ -353,7 +356,7 @@ public class GameController {
                                 resultadoLabelsetText("Resultado del disparo: El humano hundió un barco de la máquina.");
                                 Barco barco = celdaModelo.getBarco();
                                 jugador.incrementarBarcosHundidos();
-                                disparoLabel.setText("Disparo: ¡HUNDIDO!");
+                                disparoLabel.setText("Disparo del jugador: ¡HUNDIDO!");
                                 for (int i = 0; i < 10; i++) {
                                     for (int j = 0; j < 10; j++) {
                                         Celda otra = modelo.getCelda(i, j);
