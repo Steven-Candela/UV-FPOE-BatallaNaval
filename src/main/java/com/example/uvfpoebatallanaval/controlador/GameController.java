@@ -24,6 +24,7 @@ import com.example.uvfpoebatallanaval.excepciones.ExepcionCeldaDisparada;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class GameController {
@@ -38,6 +39,7 @@ public class GameController {
     @FXML private GridPane tableroPrincipal;
     @FXML private AnchorPane contenedorBarcos;
     @FXML private Label turnoLabel;
+
     @FXML private Label disparoLabel;
 
     public static GestorPartida.EstadoJuego estadoGuardado = null;
@@ -54,6 +56,7 @@ public class GameController {
 
     private void iniciarNuevaPartida() {
         solicitarNombreJugador();
+
 
         javafx.application.Platform.runLater(() -> {
             javafx.scene.control.Alert alertaInicio = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
@@ -234,7 +237,7 @@ public class GameController {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/uvfpoebatallanaval/menu-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setTitle("Juego");
+        stage.setTitle("Menú del juego");
         stage.setScene(scene);
         stage.show();
     }
@@ -321,7 +324,6 @@ public class GameController {
                     celda.setOnMouseClicked(e -> {
                         // Para evitar que el humano dispare cuando no es su turno
                         if (!(estrategiaTurno instanceof TurnoHumano)) return;
-
                         try {
                             Celda celdaModelo = modelo.getCelda(f, c);
                             if (celdaModelo.fueAtacada()) {
@@ -348,6 +350,7 @@ public class GameController {
                             }
 
                             if (resultado.equals("hundido")) {
+                                resultadoLabelsetText("Resultado del disparo: El humano hundió un barco de la máquina.");
                                 Barco barco = celdaModelo.getBarco();
                                 jugador.incrementarBarcosHundidos();
                                 disparoLabel.setText("Disparo: ¡HUNDIDO!");
@@ -388,6 +391,7 @@ public class GameController {
 
                             // Cambiar turno (si fue agua)
                             if (resultado.equals("agua")) {
+                                resultadoLabelsetText("Resultado del disparo: El humano disparó en el agua.");
                                 setEstrategiaTurno(new TurnoMaquina());
                                 ejecutarTurnoActual();
                             }
@@ -458,6 +462,8 @@ public class GameController {
             }
         }
     }
+
+    public EstrategiaTurno getEstrategiaTurno() {return estrategiaTurno;}
 
     public void ejecutarTurnoActual() {
         if (juegoTerminado || estrategiaTurno == null) return;

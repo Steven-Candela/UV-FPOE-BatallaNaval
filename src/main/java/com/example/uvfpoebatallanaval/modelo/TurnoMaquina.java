@@ -3,7 +3,6 @@ package com.example.uvfpoebatallanaval.modelo;
 import com.example.uvfpoebatallanaval.controlador.GameController;
 import com.example.uvfpoebatallanaval.vista.ElementosDisparo;
 import javafx.animation.PauseTransition;
-import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Shape;
@@ -15,7 +14,7 @@ public class TurnoMaquina implements EstrategiaTurno {
     @Override
     public void ejecutarTurno(GameController controlador) {
         if (controlador.isJuegoTerminado()) return;
-
+        controlador.turnoLabelSetText("Turno: Maquina.");
         System.out.println("Turno de la máquina");
 
         PauseTransition pausa = new PauseTransition(Duration.seconds(2));
@@ -46,7 +45,12 @@ public class TurnoMaquina implements EstrategiaTurno {
                 default -> formas = List.of();
             }
 
+            if (resultado.equals("tocado")){
+                controlador.resultadoLabelsetText("Resultado del disparo: La máquina ha tocado un barco del humano.");
+            }
+
             if (resultado.equals("hundido")) {
+                controlador.resultadoLabelsetText("Resultado del disparo: La maquina hundió un barco del humano.");
                 Barco barco = tableroJugador.getCelda(fila, col).getBarco();
                 for (int i = 0; i < 10; i++) {
                     for (int j = 0; j < 10; j++) {
@@ -72,16 +76,19 @@ public class TurnoMaquina implements EstrategiaTurno {
                     javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
                     alerta.setTitle("Fin del juego");
                     alerta.setHeaderText("¡Has perdido!");
-                    alerta.setContentText("La máquina ha hundido todos tus barcos.");
+                    alerta.setContentText("La máquina ha hundido todos tus barcos. Se reiniciará el juego.");
                     alerta.showAndWait();
                 });
                 controlador.habilitarTableroEnemigo(false);
+                controlador.reiniciarJuego();
                 return;
             }
 
             // Para cambiar el turno
             if (resultado.equals("agua")) {
+                controlador.resultadoLabelsetText("Resultado del disparo: La máquina disparó en el agua.");
                 controlador.setEstrategiaTurno(new TurnoHumano(controlador));
+                controlador.turnoLabelSetText("Turno: Humano.");
             } else {
                 controlador.setEstrategiaTurno(this);
                 controlador.ejecutarTurnoActual();
