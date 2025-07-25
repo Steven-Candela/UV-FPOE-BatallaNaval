@@ -1,36 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:controller="com.example.uvfpoebatallanaval.controlador.InstructionsController"
-            xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1"
-            maxHeight="-Infinity" maxWidth="-Infinity"
-            minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="400.0" prefWidth="478.0"
-            style="-fx-background-color: linear-gradient(to bottom, #ADD8E6, #FFFFFF);">
+<StackPane style="-fx-background-color: linear-gradient(to bottom right, #001122, #003366, #004488);" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uvfpoebatallanaval.controlador.InstructionsController">
 
    <children>
-      <VBox alignment="TOP_CENTER" layoutY="14.0" prefHeight="400.0" prefWidth="478.0" spacing="20.0">
+      <AnchorPane style="-fx-background-color: radial-gradient(center 50% 50%, radius 80%, rgba(0,100,200,0.3), transparent);">
          <children>
-            <Label text="Instrucciones del Juego">
-               <font>
-                  <Font name="Cambria Bold" size="20.0" />
-               </font>
-            </Label>
-            <Label text="Objetivo: Hundir todos los barcos del oponente antes de que él hunda los &#10;tuyos.&#10;&#10;Cómo jugar: Cada jugador tiene una cuadrícula donde coloca sus barcos &#10;en secreto. En cada turno, selecciona una celda del tablero enemigo para &#10;disparar. Si aciertas en un barco, será marcado como tocado. Si fallas, &#10;se marcará como agua.&#10;&#10;Tipos de barcos: &#10;&#10;- Portaviones (4 casillas)&#10;- Submarinos (3 casillas)&#10;- Destructores (2 casillas)&#10;- Fragatas (1 casilla)&#10;&#10;Fin del juego: El juego termina cuando un jugador ha hundido todos los &#10;barcos del oponente.">
-               <font>
-                  <Font name="Georgia" size="14.0" />
-               </font>
-            </Label>
-            <Button fx:id="volverAlMenuButton" mnemonicParsing="false" onAction="#onActionVolverMenu" text="Volver al Menú">
-               <font>
-                  <Font name="Book Antiqua" size="16.0" />
-               </font>
-            </Button>
+            <VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 20; -fx-padding: 35;" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="30.0">
+               <children>
+
+                  <Label style="-fx-font-family: 'Arial Black'; -fx-font-size: 26; -fx-font-weight: bold;" text="INSTRUCCIONES DEL JUEGO" textFill="#00BFFF">
+                     <effect>
+                        <DropShadow color="#000080" radius="4.0" />
+                     </effect>
+                  </Label>
+
+                  <Label style="-fx-font-size: 16; -fx-font-weight: bold; -fx-font-family: 'Georgia';" text="Objetivo del juego:" textAlignment="CENTER" textFill="#00BFFF" wrapText="true" />
+
+                  <Label style="-fx-font-size: 14; -fx-font-family: 'Georgia';" text="Hundir todos los barcos del oponente antes de que él hunda los tuyos." textAlignment="CENTER" textFill="WHITE" wrapText="true" />
+
+                  <Label style="-fx-font-size: 16; -fx-font-weight: bold; -fx-font-family: 'Georgia';" text="Cómo jugar:" textAlignment="CENTER" textFill="#00BFFF" wrapText="true" />
+
+                  <Label style="-fx-font-size: 14; -fx-font-family: 'Georgia';" text="Cada jugador tiene una cuadrícula donde coloca sus barcos en secreto." textAlignment="CENTER" textFill="WHITE" wrapText="true" />
+                  <Label style="-fx-font-size: 14; -fx-font-family: 'Georgia';" text="En cada turno, selecciona una celda del tablero enemigo para disparar." textAlignment="CENTER" textFill="WHITE" wrapText="true" />
+                  <Label style="-fx-font-size: 14; -fx-font-family: 'Georgia';" text="Si aciertas en un barco, será marcado como tocado. Si fallas, se marcará como agua." textAlignment="CENTER" textFill="WHITE" wrapText="true" />
+
+                  <Label style="-fx-font-size: 16; -fx-font-weight: bold; -fx-font-family: 'Georgia';" text="Tipos de barcos:" textAlignment="CENTER" textFill="#00BFFF" wrapText="true" />
+
+                  <Label style="-fx-font-size: 14; -fx-font-family: 'Georgia';" text="- Portaviones (4 casillas)&#10;- Submarinos (3 casillas)&#10;- Destructores (2 casillas)&#10;- Fragatas (1 casilla)" textAlignment="CENTER" textFill="WHITE" wrapText="true" />
+
+                  <Label style="-fx-font-size: 16; -fx-font-weight: bold; -fx-font-family: 'Georgia';" text="Fin del juego:" textAlignment="CENTER" textFill="#00BFFF" wrapText="true" />
+
+                  <Label style="-fx-font-size: 14; -fx-font-family: 'Georgia';" text="El juego termina cuando un jugador ha hundido todos los barcos del oponente. ¡Buena suerte, capitán!" textAlignment="CENTER" textFill="WHITE" wrapText="true" />
+
+                  <Button fx:id="volverAlMenuButton" onAction="#onActionVolverMenu" prefHeight="40" prefWidth="220" style="-fx-background-color: linear-gradient(to bottom, #1E90FF, #0078D4); -fx-background-radius: 20; -fx-font-family: 'Arial Bold'; -fx-font-size: 13;" text="🏠 VOLVER AL MENÚ" textFill="WHITE">
+                     <effect>
+                        <DropShadow color="rgba(0,0,0,0.5)" radius="3.5" />
+                     </effect>
+                  </Button>
+               </children>
+               <effect>
+                  <DropShadow color="rgba(0,0,0,0.6)" radius="10.0" />
+               </effect>
+            </VBox>
+
+            <!-- Iconos decorativos -->
+            <Label style="-fx-font-size: 30; -fx-opacity: 0.3;" text="📘" textFill="#1E90FF" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="30.0" />
+            <Label style="-fx-font-size: 25; -fx-opacity: 0.4;" text="🧭" textFill="#00BFFF" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="130.0" />
          </children>
-      </VBox>
+      </AnchorPane>
    </children>
-</AnchorPane>
+</StackPane>

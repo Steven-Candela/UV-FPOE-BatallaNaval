@@ -3,42 +3,82 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="357.0" prefWidth="398.0" style="-fx-background-color: linear-gradient(to bottom, #C8E6C9, #FFFFFF);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uvfpoebatallanaval.controlador.MenuController">
+<StackPane style="-fx-background-color: linear-gradient(to bottom right, #001122, #003366, #004488);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uvfpoebatallanaval.controlador.MenuController">
    <children>
-      <Label layoutX="168.0" layoutY="31.0" text="Menú">
-         <font>
-            <Font name="Algerian" size="32.0" />
-         </font>
-      </Label>
-      <Button fx:id="InstruccionesButton" layoutX="352.0" layoutY="14.0" mnemonicParsing="false" onAction="#onActionInstruccionesButton" text="?">
-         <font>
-            <Font name="Palatino Linotype Bold" size="18.0" />
-         </font>
-      </Button>
-      <VBox alignment="CENTER" layoutX="67.0" layoutY="67.0" prefHeight="279.0" prefWidth="265.0" spacing="30.0">
+      <!-- Fondo con patrón de ondas -->
+      <AnchorPane style="-fx-background-color: radial-gradient(center 50% 50%, radius 80%, rgba(0,100,200,0.3), transparent);">
          <children>
-            <Button fx:id="IniciarButton" mnemonicParsing="false" onAction="#onActionJugarButton" text="Iniciar Nuevo Juego">
-               <font>
-                  <Font name="Palatino Linotype Bold" size="16.0" />
-               </font>
+            <!-- Contenedor principal centrado -->
+            <VBox alignment="CENTER" spacing="25.0" style="-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 20; -fx-padding: 30;" AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0">
+               <children>
+                  <!-- Título del juego -->
+                  <VBox alignment="CENTER" spacing="5.0">
+                     <children>
+                        <Label text="BATALLA" textFill="#00BFFF" style="-fx-font-family: 'Arial Black'; -fx-font-size: 28; -fx-font-weight: bold;">
+                           <effect>
+                              <DropShadow blurType="GAUSSIAN" color="#000080" height="8.0" radius="3.5" width="8.0" />
+                           </effect>
+                        </Label>
+                        <Label text="NAVAL" textFill="#87CEEB" style="-fx-font-family: 'Arial Black'; -fx-font-size: 28; -fx-font-weight: bold;">
+                           <effect>
+                              <DropShadow blurType="GAUSSIAN" color="#000080" height="8.0" radius="3.5" width="8.0" />
+                           </effect>
+                        </Label>
+                        <!-- Línea decorativa -->
+                        <Region prefHeight="2.0" prefWidth="150.0" style="-fx-background-color: linear-gradient(to right, transparent, #00BFFF, transparent);" />
+                     </children>
+                  </VBox>
+
+                  <!-- Botones del menú -->
+                  <VBox alignment="CENTER" spacing="12.0">
+                     <children>
+                        <Button fx:id="IniciarButton" mnemonicParsing="false" onAction="#onActionJugarButton" prefHeight="45.0" prefWidth="250.0" text="⚓ INICIAR NUEVO JUEGO" textFill="WHITE" style="-fx-background-color: linear-gradient(to bottom, #1E90FF, #0078D4); -fx-background-radius: 22; -fx-font-family: 'Arial Bold'; -fx-font-size: 12; -fx-cursor: hand;">
+                           <effect>
+                              <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.5)" height="6.0" radius="2.5" width="6.0" />
+                           </effect>
+                        </Button>
+
+                        <Button fx:id="UltimaPartidaButton" mnemonicParsing="false" onAction="#onActionUltimaPartidaButton" prefHeight="45.0" prefWidth="250.0" text="💾 CARGAR ÚLTIMA PARTIDA" textFill="WHITE" style="-fx-background-color: linear-gradient(to bottom, #32CD32, #228B22); -fx-background-radius: 22; -fx-font-family: 'Arial Bold'; -fx-font-size: 12; -fx-cursor: hand;">
+                           <effect>
+                              <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.5)" height="6.0" radius="2.5" width="6.0" />
+                           </effect>
+                        </Button>
+
+                        <Button fx:id="CreditosButton" mnemonicParsing="false" onAction="#onActionCreditosButton" prefHeight="45.0" prefWidth="250.0" text="👥 CRÉDITOS" textFill="WHITE" style="-fx-background-color: linear-gradient(to bottom, #FFD700, #FFA500); -fx-background-radius: 22; -fx-font-family: 'Arial Bold'; -fx-font-size: 12; -fx-cursor: hand;">
+                           <effect>
+                              <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.5)" height="6.0" radius="2.5" width="6.0" />
+                           </effect>
+                        </Button>
+
+                        <Button fx:id="SalirButton" mnemonicParsing="false" onAction="#onActionSalirButton" prefHeight="45.0" prefWidth="250.0" text="🚪 SALIR DEL JUEGO" textFill="WHITE" style="-fx-background-color: linear-gradient(to bottom, #DC143C, #B22222); -fx-background-radius: 22; -fx-font-family: 'Arial Bold'; -fx-font-size: 12; -fx-cursor: hand;">
+                           <effect>
+                              <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.5)" height="6.0" radius="2.5" width="6.0" />
+                           </effect>
+                        </Button>
+                     </children>
+                  </VBox>
+               </children>
+               <effect>
+                  <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.6)" height="20.0" radius="9.5" width="20.0" />
+               </effect>
+            </VBox>
+
+            <!-- Botón de ayuda reposicionado -->
+            <Button fx:id="InstruccionesButton" mnemonicParsing="false" onAction="#onActionInstruccionesButton" prefHeight="35.0" prefWidth="35.0" text="?" textFill="WHITE" style="-fx-background-color: linear-gradient(to bottom, #4169E1, #191970); -fx-background-radius: 17.5; -fx-font-family: 'Arial Bold'; -fx-font-size: 14; -fx-cursor: hand;" AnchorPane.topAnchor="15.0" AnchorPane.rightAnchor="15.0">
+               <effect>
+                  <DropShadow blurType="GAUSSIAN" color="rgba(0,0,0,0.5)" height="6.0" radius="2.5" width="6.0" />
+               </effect>
             </Button>
-            <Button fx:id="UltimaPartidaButton" mnemonicParsing="false" onAction="#onActionUltimaPartidaButton" text="Cargar Última Partida">
-               <font>
-                  <Font name="Palatino Linotype Bold" size="16.0" />
-               </font>
-            </Button>
-            <Button fx:id="CreditosButton" mnemonicParsing="false" onAction="#onActionCreditosButton" text="Créditos">
-               <font>
-                  <Font name="Palatino Linotype Bold" size="16.0" />
-               </font>
-            </Button>
-            <Button fx:id="SalirButton" mnemonicParsing="false" onAction="#onActionSalirButton" text="Salir del Juego">
-               <font>
-                  <Font name="Palatino Linotype Bold" size="16.0" />
-               </font>
-            </Button>
+
+            <!-- Elementos decorativos responsive -->
+            <Label text="⚓" textFill="#1E90FF" style="-fx-font-size: 30; -fx-opacity: 0.3;" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="30.0" />
+            <Label text="⚓" textFill="#1E90FF" style="-fx-font-size: 25; -fx-opacity: 0.2;" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="30.0" />
+            <Label text="🌊" textFill="#00BFFF" style="-fx-font-size: 20; -fx-opacity: 0.4;" AnchorPane.topAnchor="120.0" AnchorPane.leftAnchor="60.0" />
+            <Label text="🌊" textFill="#00BFFF" style="-fx-font-size: 25; -fx-opacity: 0.3;" AnchorPane.topAnchor="150.0" AnchorPane.rightAnchor="60.0" />
          </children>
-      </VBox>
+      </AnchorPane>
    </children>
-</AnchorPane>
+</StackPane>
