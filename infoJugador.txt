@@ -1,0 +1,6 @@
+nickname=Brayan
+barcosHundidos=1
+textoTurno=Turno del Jugador
+colorTurno=-fx-text-fill: black;
+textoDisparo=Disparo: AGUA
+colorDisparo=-fx-text-fill: blue;

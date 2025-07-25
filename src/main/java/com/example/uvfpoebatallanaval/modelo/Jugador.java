@@ -65,6 +65,10 @@ public class Jugador implements Serializable {
         this.barcosHundidos = barcosHundidos;
     }
 
+    public void incrementarBarcosHundidos() {
+        barcosHundidos++;
+    }
+
     public Barco getBarcoPorTipo(String tipo) {
         for (Barco barco : flota) {
             if (barco.getTipo().equalsIgnoreCase(tipo)) {

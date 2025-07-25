@@ -3,10 +3,11 @@ package com.example.uvfpoebatallanaval.modelo;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Barco {
+public class Barco implements Serializable {
     private String tipo;
     private int tamaño;
     private boolean horizontal;

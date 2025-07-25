@@ -93,6 +93,8 @@ public class TurnoMaquina implements EstrategiaTurno {
                 controlador.setEstrategiaTurno(this);
                 controlador.ejecutarTurnoActual();
             }
+
+            controlador.guardarEstado();
         });
         pausa.play();
     }
