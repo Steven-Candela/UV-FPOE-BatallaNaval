@@ -14,10 +14,14 @@ import java.util.List;
 public class TurnoMaquina implements EstrategiaTurno {
     @Override
     public void ejecutarTurno(GameController controlador) {
+        if (controlador.isJuegoTerminado()) return;
+
         System.out.println("Turno de la máquina");
 
         PauseTransition pausa = new PauseTransition(Duration.seconds(2));
         pausa.setOnFinished(event -> {
+            if (controlador.isJuegoTerminado()) return;
+
             Tablero tableroJugador = controlador.getTableroJugador();
             GridPane gridJugador = controlador.getTableroPosicion();
 
@@ -31,33 +35,22 @@ public class TurnoMaquina implements EstrategiaTurno {
 
             resultado = tableroJugador.disparar(fila, col);
 
-            // Para mostrar el disparo en el tablero visual del jugador
             double x = col * 45;
             double y = fila * 45;
             List<Shape> formas;
 
             switch (resultado) {
-                case "agua":
-                    formas = ElementosDisparo.agua(x, y);
-                    break;
-                case "tocado":
-                    formas = ElementosDisparo.tocado(x, y);
-                    break;
-                case "hundido":
-                    formas = ElementosDisparo.hundido(x, y);
-                    break;
-                default:
-                    formas = List.of();
+                case "agua" -> formas = ElementosDisparo.agua(x, y);
+                case "tocado" -> formas = ElementosDisparo.tocado(x, y);
+                case "hundido" -> formas = ElementosDisparo.hundido(x, y);
+                default -> formas = List.of();
             }
 
             if (resultado.equals("hundido")) {
                 Barco barco = tableroJugador.getCelda(fila, col).getBarco();
-                System.out.println("Barco al hundirse: " + barco);
-
                 for (int i = 0; i < 10; i++) {
                     for (int j = 0; j < 10; j++) {
-                        Celda celdaModelo = tableroJugador.getCelda(i, j);
-                        if (celdaModelo.getBarco() == barco) {
+                        if (tableroJugador.getCelda(i, j).getBarco() == barco) {
                             List<Shape> formasHundido = ElementosDisparo.hundido(0, 0);
                             StackPane celda = new StackPane();
                             celda.setPrefSize(45, 45);
@@ -73,7 +66,20 @@ public class TurnoMaquina implements EstrategiaTurno {
                 gridJugador.add(celda, col + 1, fila + 1);
             }
 
-            // Cambiar turno dependiendo del disparo
+            if (controlador.barcosHundidos(tableroJugador)) {
+                controlador.terminarJuego();
+                javafx.application.Platform.runLater(() -> {
+                    javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+                    alerta.setTitle("Fin del juego");
+                    alerta.setHeaderText("¡Has perdido!");
+                    alerta.setContentText("La máquina ha hundido todos tus barcos.");
+                    alerta.showAndWait();
+                });
+                controlador.habilitarTableroEnemigo(false);
+                return;
+            }
+
+            // Para cambiar el turno
             if (resultado.equals("agua")) {
                 controlador.setEstrategiaTurno(new TurnoHumano(controlador));
             } else {
@@ -81,7 +87,6 @@ public class TurnoMaquina implements EstrategiaTurno {
                 controlador.ejecutarTurnoActual();
             }
         });
-
         pausa.play();
     }
 }
