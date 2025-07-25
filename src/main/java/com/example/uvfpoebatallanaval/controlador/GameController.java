@@ -1,5 +1,6 @@
 package com.example.uvfpoebatallanaval.controlador;
 
+
 import com.example.uvfpoebatallanaval.excepciones.ExcepcionCeldaOcupada;
 import com.example.uvfpoebatallanaval.excepciones.ExcepcionPosicionInvalida;
 import com.example.uvfpoebatallanaval.modelo.*;
@@ -31,12 +32,29 @@ public class GameController {
     private boolean juegoIniciado = false;
     private EstrategiaTurno estrategiaTurno;
     private boolean juegoTerminado = false;
+    private Jugador jugador;
 
     @FXML private GridPane tableroPosicion;
     @FXML private GridPane tableroPrincipal;
     @FXML private AnchorPane contenedorBarcos;
+    @FXML private Label turnoLabel;
+    @FXML private Label disparoLabel;
 
+    public static GestorPartida.EstadoJuego estadoGuardado = null;
+
+    @FXML
     public void initialize() {
+        if (estadoGuardado != null) {
+            cargarPartidaDesdeArchivo(estadoGuardado);
+            estadoGuardado = null; // Limpiamos para evitar problemas en el futuro
+        } else {
+            iniciarNuevaPartida();
+        }
+    }
+
+    private void iniciarNuevaPartida() {
+        solicitarNombreJugador();
+
         javafx.application.Platform.runLater(() -> {
             javafx.scene.control.Alert alertaInicio = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
             alertaInicio.setTitle("Instrucciones iniciales");
@@ -54,6 +72,161 @@ public class GameController {
         colocarBarcosMaquina();
         habilitarTableroEnemigo(false);
     }
+
+
+    private void solicitarNombreJugador() {
+        javafx.scene.control.TextInputDialog dialogo = new javafx.scene.control.TextInputDialog();
+        dialogo.setTitle("Nombre del Jugador");
+        dialogo.setHeaderText("Bienvenido a Batalla Naval");
+        dialogo.setContentText("Por favor, ingresa tu nombre:");
+
+        Optional<String> resultado = dialogo.showAndWait();
+
+        resultado.ifPresentOrElse(nombre -> {
+            jugador = new Jugador(nombre);
+            System.out.println("Jugador: " + nombre);
+        }, () -> {
+            // Si cancela, cerramos el juego
+            javafx.application.Platform.exit();
+        });
+    }
+
+    private void cargarPartidaDesdeArchivo(GestorPartida.EstadoJuego estado) {
+        this.tableroJugador = estado.tableroJugador;
+        this.tableroMaquina = estado.tableroMaquina;
+        this.jugador = new Jugador(estado.nickname);
+        this.jugador.setBarcosHundidos(estado.barcosHundidos);
+        this.juegoIniciado = true;
+
+        crearTablero(tableroPosicion, tableroJugador, false);
+        crearTablero(tableroPrincipal, tableroMaquina, true);
+        habilitarTableroEnemigo(true);
+
+        turnoLabel.setText(estado.textoTurno);
+        turnoLabel.setStyle(estado.colorTurno);
+        disparoLabel.setText(estado.textoDisparo);
+        disparoLabel.setStyle(estado.colorDisparo);
+
+
+        setEstrategiaTurno(new TurnoHumano(this));
+        ejecutarTurnoActual();
+
+        // 👇 Añadir esto: volver a dibujar los barcos del jugador
+        redibujarBarcosJugador();
+        redibujarDisparos();
+    }
+
+    private void redibujarBarcosJugador() {
+        List<Barco> barcosDibujados = new ArrayList<>();
+
+        for (int fila = 0; fila < 10; fila++) {
+            for (int col = 0; col < 10; col++) {
+                Celda celda = tableroJugador.getCelda(fila, col);
+                if (celda.tieneBarco()) {
+                    Barco barco = celda.getBarco();
+
+                    if (barcosDibujados.contains(barco)) continue; // evitar duplicados
+                    barcosDibujados.add(barco);
+
+                    // Buscar coordenadas base del barco
+                    int baseFila = -1, baseCol = -1;
+                    for (int i = 0; i < 10 && baseFila == -1; i++) {
+                        for (int j = 0; j < 10; j++) {
+                            if (tableroJugador.getCelda(i, j).getBarco() == barco) {
+                                baseFila = i;
+                                baseCol = j;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Coordenadas visuales base
+                    double baseX = baseCol * 45;
+                    double baseY = baseFila * 45;
+
+                    List<List<Shape>> formas = barco.crearFormas(baseX, baseY);
+
+                    for (int i = 0; i < formas.size(); i++) {
+                        int f = baseFila + (barco.esHorizontal() ? 0 : i);
+                        int c = baseCol + (barco.esHorizontal() ? i : 0);
+
+                        Node celdaNode = obtenerCelda(tableroPosicion, f + 1, c + 1);
+                        if (celdaNode instanceof StackPane celdaPane) {
+                            for (Shape shape : formas.get(i)) {
+                                shape.setLayoutX(0);
+                                shape.setLayoutY(0);
+                                celdaPane.getChildren().add(shape);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void redibujarDisparos() {
+        // 🔵 Redibujar disparos en el tablero de la máquina (enemigo)
+        for (int fila = 0; fila < 10; fila++) {
+            for (int col = 0; col < 10; col++) {
+                Celda celda = tableroMaquina.getCelda(fila, col);
+                if (celda.fueAtacada()) {
+                    Node celdaNode = obtenerCelda(tableroPrincipal, fila + 1, col + 1);
+                    if (celdaNode instanceof StackPane celdaPane) {
+                        Barco barco = celda.getBarco();
+
+                        if (barco != null) {
+                            if (barco.estaHundido()) {
+                                celdaPane.getChildren().removeIf(n -> n instanceof Shape && !"fondoCelda".equals(n.getId()));
+                                celdaPane.getChildren().addAll(ElementosDisparo.hundido(0, 0));
+                            } else {
+                                celdaPane.getChildren().addAll(ElementosDisparo.tocado(0, 0));
+                            }
+                        } else {
+                            celdaPane.getChildren().addAll(ElementosDisparo.agua(0, 0));
+                        }
+                    }
+                }
+            }
+        }
+
+        // 🟡 Redibujar disparos en el tablero del jugador (por si se quiere mostrar)
+        for (int fila = 0; fila < 10; fila++) {
+            for (int col = 0; col < 10; col++) {
+                Celda celda = tableroJugador.getCelda(fila, col);
+                if (celda.fueAtacada()) {
+                    Node celdaNode = obtenerCelda(tableroPosicion, fila + 1, col + 1);
+                    if (celdaNode instanceof StackPane celdaPane) {
+                        Barco barco = celda.getBarco();
+
+                        if (barco != null) {
+                            if (barco.estaHundido()) {
+                                celdaPane.getChildren().removeIf(n -> n instanceof Shape && !"fondoCelda".equals(n.getId()));
+                                celdaPane.getChildren().addAll(ElementosDisparo.hundido(0, 0));
+                            } else {
+                                celdaPane.getChildren().addAll(ElementosDisparo.tocado(0, 0));
+                            }
+                        } else {
+                            celdaPane.getChildren().addAll(ElementosDisparo.agua(0, 0));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    public void guardarEstado() {
+        System.out.println("Guardado desde el turno de la máquina. Barcos hundidos: " + jugador.getBarcosHundidos());
+
+        String textoTurno = turnoLabel.getText();
+        String colorTurno = turnoLabel.getStyle(); // Ej: "-fx-text-fill: red;"
+        String textoDisparo = disparoLabel.getText();
+        String colorDisparo = disparoLabel.getStyle();
+
+        GestorPartida.guardarPartida(tableroJugador, tableroMaquina, jugador.getNombre(), jugador.getBarcosHundidos(),
+                textoTurno, colorTurno, textoDisparo, colorDisparo);
+    }
+
 
     @FXML
     private void onActionVolverMenu(ActionEvent event) throws IOException {
@@ -156,8 +329,28 @@ public class GameController {
                             }
                             String resultado = celdaModelo.recibirDisparo();
 
+                            if (disparoLabel != null) {
+                                switch (resultado) {
+                                    case "agua" -> {
+                                        disparoLabel.setText("Disparo: AGUA");
+                                        disparoLabel.setStyle("-fx-text-fill: blue;");
+                                    }
+                                    case "tocado" -> {
+                                        disparoLabel.setText("Disparo: ¡TOCADO!");
+                                        disparoLabel.setStyle("-fx-text-fill: red;");
+                                    }
+                                    case "hundido" -> {
+                                        disparoLabel.setText("Disparo: ¡HUNDIDO!");
+                                        disparoLabel.setStyle("-fx-text-fill: black;");
+                                    }
+                                    default -> disparoLabel.setText("Disparo desconocido");
+                                }
+                            }
+
                             if (resultado.equals("hundido")) {
                                 Barco barco = celdaModelo.getBarco();
+                                jugador.incrementarBarcosHundidos();
+                                disparoLabel.setText("Disparo: ¡HUNDIDO!");
                                 for (int i = 0; i < 10; i++) {
                                     for (int j = 0; j < 10; j++) {
                                         Celda otra = modelo.getCelda(i, j);
@@ -198,6 +391,10 @@ public class GameController {
                                 setEstrategiaTurno(new TurnoMaquina());
                                 ejecutarTurnoActual();
                             }
+
+                            System.out.println("Guardado desde el turno del jugador. Barcos hundidos: " + jugador.getBarcosHundidos());
+                            guardarEstado();
+
 
                         } catch (ExepcionCeldaDisparada ex) {
                             System.out.println("Error: " + ex.getMessage());
@@ -252,6 +449,14 @@ public class GameController {
 
     public void setEstrategiaTurno(EstrategiaTurno estrategia) {
         this.estrategiaTurno = estrategia;
+
+        if (turnoLabel != null) {
+            if (estrategia instanceof TurnoHumano) {
+                turnoLabel.setText("Turno del Jugador");
+            } else if (estrategia instanceof TurnoMaquina) {
+                turnoLabel.setText("Turno de la Máquina");
+            }
+        }
     }
 
     public void ejecutarTurnoActual() {
