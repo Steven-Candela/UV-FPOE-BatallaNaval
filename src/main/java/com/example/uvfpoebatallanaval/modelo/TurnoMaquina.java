@@ -94,7 +94,6 @@ public class TurnoMaquina implements EstrategiaTurno {
                 return;
             }
 
-            // Para cambiar el turno
             if (resultado.equals("agua")) {
                 controlador.setEstrategiaTurno(new TurnoHumano(controlador));
             } else {
