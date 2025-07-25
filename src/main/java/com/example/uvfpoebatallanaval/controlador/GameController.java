@@ -35,6 +35,14 @@ public class GameController {
     @FXML private AnchorPane contenedorBarcos;
 
     public void initialize() {
+        javafx.application.Platform.runLater(() -> {
+            javafx.scene.control.Alert alertaInicio = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+            alertaInicio.setTitle("Instrucciones iniciales");
+            alertaInicio.setHeaderText("¡Bienvenido a Batalla Naval!");
+            alertaInicio.setContentText("Arrastra tus barcos al tablero de posición para iniciar el juego :)");
+            alertaInicio.showAndWait();
+        });
+
         tableroJugador = new Tablero();
         tableroMaquina = new Tablero();
 
