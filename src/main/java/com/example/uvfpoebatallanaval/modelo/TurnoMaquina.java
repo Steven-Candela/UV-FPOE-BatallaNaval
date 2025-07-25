@@ -59,16 +59,18 @@ public class TurnoMaquina implements EstrategiaTurno {
                         Celda celdaModelo = tableroJugador.getCelda(i, j);
                         if (celdaModelo.getBarco() == barco) {
                             List<Shape> formasHundido = ElementosDisparo.hundido(0, 0);
-                            for (Shape s : formasHundido) {
-                                gridJugador.add(s, j + 1, i + 1);
-                            }
+                            StackPane celda = new StackPane();
+                            celda.setPrefSize(45, 45);
+                            celda.getChildren().addAll(formasHundido);
+                            gridJugador.add(celda, j + 1, i + 1);
                         }
                     }
                 }
             } else {
-                for (Shape s : formas) {
-                    gridJugador.add(s, col + 1, fila + 1);
-                }
+                StackPane celda = new StackPane();
+                celda.setPrefSize(45, 45);
+                celda.getChildren().addAll(formas);
+                gridJugador.add(celda, col + 1, fila + 1);
             }
 
             // Cambiar turno dependiendo del disparo
