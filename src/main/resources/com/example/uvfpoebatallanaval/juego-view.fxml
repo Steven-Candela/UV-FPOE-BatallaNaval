@@ -42,11 +42,11 @@
    <bottom>
       <VBox alignment="CENTER" prefHeight="96.0" prefWidth="658.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <Label text="Turno:">
+            <Label fx:id="turnoLabel" text="Turno:">
                <font>
                   <Font name="Bookman Old Style" size="18.0" />
                </font></Label>
-            <Label text="Resultado del disparo: ">
+            <Label fx:id="resultadoDisparoLabel" text="Resultado del disparo: ">
                <font>
                   <Font name="Bookman Old Style" size="18.0" />
                </font></Label>
