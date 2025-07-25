@@ -76,15 +76,7 @@ public class GameController {
         Optional<ButtonType> resultado = alerta.showAndWait();
 
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-            try {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/uvfpoebatallanaval/juego-view.fxml"));
-                Scene nuevaEscena = new Scene(fxmlLoader.load());
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                stage.setScene(nuevaEscena);
-                stage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            reiniciarJuego();
         }
     }
 
@@ -183,10 +175,11 @@ public class GameController {
                                     javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
                                     alerta.setTitle("Fin del juego");
                                     alerta.setHeaderText("¡Has ganado!");
-                                    alerta.setContentText("Has hundido todos los barcos enemigos.");
+                                    alerta.setContentText("Has hundido todos los barcos enemigos. Se reiniciará el juego.");
                                     alerta.showAndWait();
 
                                     habilitarTableroEnemigo(false);
+                                    reiniciarJuego();
                                 }
                                 return;
                             } else {
@@ -380,7 +373,7 @@ public class GameController {
         }
     }
 
-    private void limpiarTablero() {
+    private void limpiarTableroPrincipal() {
         for (Node node : tableroPrincipal.getChildren()) {
             Integer fila = GridPane.getRowIndex(node);
             Integer col = GridPane.getColumnIndex(node);
@@ -391,6 +384,40 @@ public class GameController {
                 celdaPane.getChildren().removeIf(child -> child instanceof Shape && !("fondoCelda".equals(child.getId())));
             }
         }
+    }
+
+    private void limpiarTableroPosicion() {
+        for (Node node : tableroPosicion.getChildren()) {
+            Integer fila = GridPane.getRowIndex(node);
+            Integer col = GridPane.getColumnIndex(node);
+
+            if (fila == null || col == null || fila == 0 || col == 0) continue;
+
+            if (node instanceof StackPane celdaPane) {
+                celdaPane.getChildren().removeIf(child -> child instanceof Shape && !("fondoCelda".equals(child.getId())));
+            }
+        }
+    }
+
+    public void reiniciarJuego() {
+        tableroJugador = new Tablero();
+        tableroMaquina = new Tablero();
+        limpiarTableroPrincipal();
+        limpiarTableroPosicion();
+        crearTablero(tableroPosicion, tableroJugador, false);
+        crearTablero(tableroPrincipal, tableroMaquina, true);
+
+        // Limpiar y volver a colocar barcos
+        contenedorBarcos.getChildren().clear();
+        inicializarBarcos();
+        colocarBarcosMaquina();
+
+        // Resetear estado de juego
+        juegoIniciado = false;
+        juegoTerminado = false;
+        estrategiaTurno = null;
+
+        habilitarTableroEnemigo(false);
     }
 
     private class BarcoArrastrable implements Arrastrable {
@@ -475,7 +502,7 @@ public class GameController {
                                 Optional<ButtonType> resultado = confirmacion.showAndWait();
                                 if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
                                     juegoIniciado = true;
-                                    limpiarTablero();
+                                    limpiarTableroPrincipal();
                                     habilitarTableroEnemigo(true);
                                     setEstrategiaTurno(new TurnoHumano(GameController.this));
                                     ejecutarTurnoActual();
