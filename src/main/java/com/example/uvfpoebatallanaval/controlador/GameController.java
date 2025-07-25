@@ -353,7 +353,6 @@ public class GameController {
                             }
 
                             if (resultado.equals("hundido")) {
-                                resultadoLabelsetText("Resultado del disparo: El humano hundió un barco de la máquina.");
                                 Barco barco = celdaModelo.getBarco();
                                 jugador.incrementarBarcosHundidos();
                                 disparoLabel.setText("Disparo del jugador: ¡HUNDIDO!");
@@ -394,7 +393,6 @@ public class GameController {
 
                             // Cambiar turno (si fue agua)
                             if (resultado.equals("agua")) {
-                                resultadoLabelsetText("Resultado del disparo: El humano disparó en el agua.");
                                 setEstrategiaTurno(new TurnoMaquina());
                                 ejecutarTurnoActual();
                             }
