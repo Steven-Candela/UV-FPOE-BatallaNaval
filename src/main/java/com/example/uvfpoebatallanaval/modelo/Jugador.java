@@ -11,13 +11,13 @@ import java.util.List;
  * Representa al jugador humano en el juego Batalla Naval.
  */
 public class Jugador implements Serializable {
-    private String Nombre;
+    private String nombre;
     private Tablero tablero;
     private List<Barco> flota;
     private int barcosHundidos;
 
-    public Jugador(String nickName) {
-        this.Nombre = nickName;
+    public Jugador(String nombre) {
+        this.nombre = nombre;
         this.tablero = new Tablero();
         this.flota = new ArrayList<>();
         this.barcosHundidos = 0;
@@ -52,9 +52,9 @@ public class Jugador implements Serializable {
     public List<Barco> getFlota() {
         return flota;
     }
-    public void setNombre(String Nombre){this.Nombre = Nombre;}
+
     public String getNombre() {
-        return Nombre;
+        return nombre;
     }
 
     public int getBarcosHundidos() {

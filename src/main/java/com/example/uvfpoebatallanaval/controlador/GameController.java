@@ -24,7 +24,6 @@ import com.example.uvfpoebatallanaval.excepciones.ExepcionCeldaDisparada;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class GameController {
@@ -39,7 +38,6 @@ public class GameController {
     @FXML private GridPane tableroPrincipal;
     @FXML private AnchorPane contenedorBarcos;
     @FXML private Label turnoLabel;
-
     @FXML private Label disparoLabel;
     public Label getDisparoLabel() {
         return disparoLabel;
@@ -58,8 +56,9 @@ public class GameController {
     }
 
     private void iniciarNuevaPartida() {
-        solicitarNombreJugador();
 
+        GestorPartida.eliminarPartidaGuardada();
+        solicitarNombreJugador();
 
         javafx.application.Platform.runLater(() -> {
             javafx.scene.control.Alert alertaInicio = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
@@ -240,7 +239,7 @@ public class GameController {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/uvfpoebatallanaval/menu-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setTitle("Menú del juego");
+        stage.setTitle("Juego");
         stage.setScene(scene);
         stage.show();
     }
@@ -327,6 +326,7 @@ public class GameController {
                     celda.setOnMouseClicked(e -> {
                         // Para evitar que el humano dispare cuando no es su turno
                         if (!(estrategiaTurno instanceof TurnoHumano)) return;
+
                         try {
                             Celda celdaModelo = modelo.getCelda(f, c);
                             if (celdaModelo.fueAtacada()) {
@@ -463,8 +463,6 @@ public class GameController {
             }
         }
     }
-
-    public EstrategiaTurno getEstrategiaTurno() {return estrategiaTurno;}
 
     public void ejecutarTurnoActual() {
         if (juegoTerminado || estrategiaTurno == null) return;
