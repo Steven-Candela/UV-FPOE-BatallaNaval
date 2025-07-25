@@ -35,6 +35,21 @@ public class TurnoMaquina implements EstrategiaTurno {
 
             resultado = tableroJugador.disparar(fila, col);
 
+            switch (resultado) {
+                case "agua" -> {
+                    controlador.getDisparoLabel().setText("Disparo de la máquina: AGUA");
+                    controlador.getDisparoLabel().setStyle("-fx-text-fill: blue;");
+                }
+                case "tocado" -> {
+                    controlador.getDisparoLabel().setText("Disparo de la máquina: ¡TOCADO!");
+                    controlador.getDisparoLabel().setStyle("-fx-text-fill: red;");
+                }
+                case "hundido" -> {
+                    controlador.getDisparoLabel().setText("Disparo de la máquina: ¡HUNDIDO!");
+                    controlador.getDisparoLabel().setStyle("-fx-text-fill: black;");
+                }
+            }
+
             double x = col * 45;
             double y = fila * 45;
             List<Shape> formas;

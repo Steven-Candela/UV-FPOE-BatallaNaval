@@ -1,6 +1,6 @@
-nickname=Brayan
-barcosHundidos=1
-textoTurno=Turno del Jugador
+nickname=adsfasfd
+barcosHundidos=0
+textoTurno=Turno de la Máquina
 colorTurno=-fx-text-fill: black;
-textoDisparo=Disparo: AGUA
+textoDisparo=Disparo del jugador: AGUA
 colorDisparo=-fx-text-fill: blue;

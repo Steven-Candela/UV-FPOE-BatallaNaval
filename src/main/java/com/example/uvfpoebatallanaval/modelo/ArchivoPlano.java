@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class ArchivoPlano {
 
-    public static void guardarInfoJugadorAvanzado(String nickname, int barcosHundidos,
+    public static void guardarInfoJugador(String nickname, int barcosHundidos,
                                                   String textoTurno, String colorTurno,
                                                   String textoDisparo, String colorDisparo,
                                                   File archivo) throws IOException {
