@@ -56,6 +56,8 @@ public class GameController {
     }
 
     private void iniciarNuevaPartida() {
+
+        GestorPartida.eliminarPartidaGuardada();
         solicitarNombreJugador();
 
         javafx.application.Platform.runLater(() -> {
