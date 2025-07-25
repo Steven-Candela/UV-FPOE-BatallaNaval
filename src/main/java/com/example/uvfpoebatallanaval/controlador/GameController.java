@@ -121,6 +121,7 @@ public class GameController {
                 Rectangle fondo = new Rectangle(45, 45);
                 fondo.setFill(Color.WHITE);
                 fondo.setStroke(Color.BLACK);
+                fondo.setId("fondoCelda");
 
                 celda.getChildren().add(fondo);
 
@@ -147,7 +148,7 @@ public class GameController {
                                         if (otra.getBarco() == barco) {
                                             Node nodo = obtenerCelda(tableroPrincipal, i + 1, j + 1);
                                             if (nodo instanceof StackPane pane) {
-                                                pane.getChildren().removeIf(n -> n instanceof Shape);
+                                                pane.getChildren().removeIf(n -> n instanceof Shape && !"fondoCelda".equals(n.getId()));
                                                 pane.getChildren().addAll(ElementosDisparo.hundido(0, 0));
                                             }
                                         }
@@ -192,7 +193,6 @@ public class GameController {
                         }
                     });
                 }
-
                 tablero.add(celda, col + 1, fila + 1);
             }
         }
@@ -351,6 +351,19 @@ public class GameController {
         }
     }
 
+    private void limpiarTablero() {
+        for (Node node : tableroPrincipal.getChildren()) {
+            Integer fila = GridPane.getRowIndex(node);
+            Integer col = GridPane.getColumnIndex(node);
+
+            if (fila == null || col == null || fila == 0 || col == 0) continue;
+
+            if (node instanceof StackPane celdaPane) {
+                celdaPane.getChildren().removeIf(child -> child instanceof Shape && !("fondoCelda".equals(child.getId())));
+            }
+        }
+    }
+
     private class BarcoArrastrable implements Arrastrable {
         private final Barco barco;
         private final List<List<Shape>> formasPorCelda;
@@ -430,6 +443,7 @@ public class GameController {
 
                                 confirmacion.showAndWait().ifPresent(response -> {
                                     juegoIniciado = true;
+                                    limpiarTablero();
                                     habilitarTableroEnemigo(true);
                                     setEstrategiaTurno(new TurnoHumano(GameController.this));
                                     ejecutarTurnoActual();
