@@ -64,7 +64,7 @@
                      <font>
                         <Font name="Gill Sans MT" size="18.0" />
                      </font></Button>
-                  <Button fx:id="salirButton" mnemonicParsing="false" text="Salir">
+                  <Button fx:id="salirButton" mnemonicParsing="false" onAction="#onActionSalirButton" text="Salir">
                      <font>
                         <Font name="Gill Sans MT" size="18.0" />
                      </font>

@@ -313,6 +313,11 @@ public class GameController {
         }
     }
 
+    @FXML
+    private void onActionSalirButton(ActionEvent event) {
+        System.exit(0);
+    }
+
     public Node obtenerCelda(GridPane grid, int fila, int columna) {
         for (Node node : grid.getChildren()) {
             if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
