@@ -281,9 +281,15 @@ public class GameController {
 
     private void agregarAlContenedor(Barco barco, double x, double y) {
         List<List<Shape>> formasPorCelda = barco.crearFormas(x, y);
+
+        // Agregar las formas al contenedor y marcarlas con el barco
         for (List<Shape> grupo : formasPorCelda) {
+            for (Shape forma : grupo) {
+                forma.setUserData(barco); // Marcar cada forma con su barco
+            }
             contenedorBarcos.getChildren().addAll(grupo);
         }
+
         new BarcoArrastrable(barco, formasPorCelda);
     }
 
@@ -630,6 +636,60 @@ public class GameController {
         habilitarTableroEnemigo(false);
     }
 
+    private void rotarBarcoEnContenedor(Barco barco) {
+        // Solo permitir rotación antes de que inicie el juego
+        if (juegoIniciado) {
+            return;
+        }
+
+        System.out.println("Rotando barco: " + barco.getTipo());
+
+        javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        alerta.setTitle("Test");
+        alerta.setHeaderText("¡Clic derecho detectado!");
+        alerta.setContentText("Barco: " + barco.getTipo());
+        alerta.showAndWait();
+
+        // Rotar el barco
+        barco.rotar();
+
+        // Redibujar el barco en el contenedor
+        redibujarBarcoEnContenedor(barco);
+    }
+
+    private void redibujarBarcoEnContenedor(Barco barco) {
+        // Encontrar la posición actual del barco
+        double posX = 50, posY = 50; // Posición por defecto
+
+        // Buscar alguna forma del barco para obtener su posición
+        for (Node nodo : contenedorBarcos.getChildren()) {
+            if (nodo instanceof Shape forma && forma.getUserData() == barco) {
+                posX = forma.getLayoutX();
+                posY = forma.getLayoutY();
+                break;
+            }
+        }
+
+        // Remover todas las formas del barco del contenedor
+        contenedorBarcos.getChildren().removeIf(nodo ->
+                nodo instanceof Shape && ((Shape) nodo).getUserData() == barco
+        );
+
+        // Crear nuevas formas con la nueva orientación
+        List<List<Shape>> nuevasFormas = barco.crearFormas(posX, posY);
+
+        // Agregar las nuevas formas al contenedor y marcarlas
+        for (List<Shape> grupo : nuevasFormas) {
+            for (Shape forma : grupo) {
+                forma.setUserData(barco); // Marcar la forma con el barco
+            }
+            contenedorBarcos.getChildren().addAll(grupo);
+        }
+
+        // Recrear los eventos de arrastre
+        new BarcoArrastrable(barco, nuevasFormas);
+    }
+
     private class BarcoArrastrable implements Arrastrable {
         private final Barco barco;
         private final List<List<Shape>> formasPorCelda;
@@ -640,6 +700,16 @@ public class GameController {
             this.formasPorCelda = formasPorCelda;
             for (List<Shape> grupo : formasPorCelda) {
                 for (Shape forma : grupo) {
+                    forma.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, e -> {
+                        System.out.println("CLICK DETECTADO - Botón: " + e.getButton() + ", Juego iniciado: " + juegoIniciado);
+
+                        if (juegoIniciado) return;
+                        if (e.getButton() == javafx.scene.input.MouseButton.SECONDARY) { // Clic derecho
+                            System.out.println("CLIC DERECHO CONFIRMADO - Ejecutando rotación");
+                            rotarBarcoEnContenedor(barco);
+                            e.consume();
+                        }
+                    });
                     forma.setOnMousePressed(e -> {
                         if (juegoIniciado) return;
                         offsetX = e.getX();
@@ -745,6 +815,7 @@ public class GameController {
                 }
             }
         }
+
 
         @Override
         public void soltar(double x, double y) {}

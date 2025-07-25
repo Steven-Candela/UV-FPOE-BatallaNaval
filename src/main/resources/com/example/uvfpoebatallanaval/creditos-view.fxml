@@ -1,39 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="346.0" prefWidth="312.0" style="-fx-background-color: linear-gradient(to right, #ff9999, white);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uvfpoebatallanaval.controlador.CreditsController">
+<StackPane style="-fx-background-color: linear-gradient(to bottom right, #001122, #003366, #004488);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uvfpoebatallanaval.controlador.CreditsController">
+
    <children>
-      <VBox alignment="TOP_CENTER" layoutY="37.0" prefHeight="219.0" prefWidth="312.0" spacing="40.0">
+      <AnchorPane style="-fx-background-color: radial-gradient(center 50% 50%, radius 80%, rgba(0,100,200,0.3), transparent);">
          <children>
-            <Label text="Créditos">
-               <font>
-                  <Font name="Serif Bold" size="24.0" />
-               </font>
-            </Label>
-            <Label text="Camilo Portilla - 2418800">
-               <font>
-                  <Font name="Tw Cen MT" size="18.0" />
-               </font>
-            </Label>
-            <Label text="Nicolle Paz - 2419714">
-               <font>
-                  <Font name="Tw Cen MT" size="18.0" />
-               </font>
-            </Label>
-            <Label text="Steven Candela - 2415014">
-               <font>
-                  <Font name="Tw Cen MT" size="18.0" />
-               </font>
-            </Label>
+            <VBox alignment="CENTER" spacing="25.0" style="-fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 20; -fx-padding: 35;" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="80.0" AnchorPane.topAnchor="30.0">
+               <children>
+
+                  <Label style="-fx-font-family: 'Arial Black'; -fx-font-size: 26; -fx-font-weight: bold;" text="CRÉDITOS" textFill="#00BFFF">
+                     <effect>
+                        <DropShadow color="#000080" radius="4.0" />
+                     </effect>
+                  </Label>
+
+                  <VBox alignment="CENTER" spacing="15.0">
+                     <children>
+                        <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 14;" text="Este proyecto de Batalla Naval fue desarrollado como parte del curso:" textAlignment="CENTER" textFill="WHITE" wrapText="true" />
+                        <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 14; -fx-font-weight: bold;" text="Fundamentos de Programación Orientada a Eventos - Universidad del Valle" textAlignment="CENTER" textFill="WHITE" wrapText="true" />
+                        <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 14;" text="Docente:  Jhonatan Delgado Escobar" textAlignment="CENTER" textFill="WHITE" wrapText="true" />
+
+                        <Separator prefWidth="300" style="-fx-background-color: white;" />
+
+                        <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 15; -fx-font-weight: bold;" text="Desarrolladores:" textAlignment="CENTER" textFill="#00BFFF" wrapText="true" />
+                        <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 14;" text="• Camilo Portilla (2418800)" textAlignment="CENTER" textFill="WHITE" wrapText="true" />
+                        <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 14;" text="• Nicolle Andrea Paz (2419714)" textAlignment="CENTER" textFill="WHITE" wrapText="true" />
+                        <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 14;" text="• Steven Candela (2415014)" textAlignment="CENTER" textFill="WHITE" wrapText="true" />
+
+                        <Separator prefWidth="300" style="-fx-background-color: white;" />
+
+                        <Label style="-fx-font-family: 'Georgia'; -fx-font-size: 13;" textAlignment="CENTER" textFill="WHITE" wrapText="true" />
+                     </children>
+                  </VBox>
+
+                  <Button fx:id="volverAlMenuButton" onAction="#onActionVolverMenu" prefHeight="40" prefWidth="220" style="-fx-background-color: linear-gradient(to bottom, #1E90FF, #0078D4); -fx-background-radius: 20; -fx-font-family: 'Arial Bold'; -fx-font-size: 13;" text="🏠 VOLVER AL MENÚ" textFill="WHITE">
+                     <effect>
+                        <DropShadow color="rgba(0,0,0,0.5)" radius="3.5" />
+                     </effect>
+                  </Button>
+               </children>
+               <effect>
+                  <DropShadow color="rgba(0,0,0,0.6)" radius="10.0" />
+               </effect>
+            </VBox>
+
+            <!-- Iconos decorativos -->
+            <Label style="-fx-font-size: 30; -fx-opacity: 0.3;" text="⚓" textFill="#1E90FF" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="30.0" />
+            <Label style="-fx-font-size: 25; -fx-opacity: 0.4;" text="🌊" textFill="#00BFFF" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="130.0" />
          </children>
-      </VBox>
-      <Button fx:id="volverAlMenuButton" layoutX="96.0" layoutY="287.0" mnemonicParsing="false" onAction="#onActionVolverMenu" text="Volver al Menú">
-         <font>
-            <Font name="Constantia" size="15.0" />
-         </font>
-      </Button>
+      </AnchorPane>
    </children>
-</AnchorPane>
+</StackPane>

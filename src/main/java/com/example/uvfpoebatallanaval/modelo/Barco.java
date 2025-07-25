@@ -112,6 +112,10 @@ public class Barco implements Serializable {
         };
     }
 
+    public void rotar() {
+        this.horizontal = !this.horizontal;
+    }
+
     public int getTamaño() {
         return tamaño;
     }
