@@ -28,6 +28,7 @@ public class GameController {
     private Tablero tableroMaquina;
     private boolean juegoIniciado = false;
     private EstrategiaTurno estrategiaTurno;
+    private boolean juegoTerminado = false;
 
     @FXML private GridPane tableroPosicion;
     @FXML private GridPane tableroPrincipal;
@@ -117,7 +118,7 @@ public class GameController {
 
                 int f = fila, c = col;
 
-// Si es el tablero principal (de la máquina), se habilita el disparo
+                // Si es el tablero principal (de la máquina), se habilita el disparo
                 if (esPrincipal) {
                     celda.setOnMouseClicked(e -> {
                         // Para evitar que el humano dispare cuando no es su turno
@@ -125,13 +126,9 @@ public class GameController {
 
                         try {
                             Celda celdaModelo = modelo.getCelda(f, c);
-
-                            // Verificar si ya se disparó en esta celda
                             if (celdaModelo.fueAtacada()) {
                                 throw new ExepcionCeldaDisparada("Ya disparaste en esta celda.");
                             }
-
-                            // Marcar disparo y obtener resultado
                             String resultado = celdaModelo.recibirDisparo();
 
                             if (resultado.equals("hundido")) {
@@ -147,6 +144,16 @@ public class GameController {
                                             }
                                         }
                                     }
+                                }
+                                // Verificar si el humano ganó
+                                if (barcosHundidos(modelo)) {
+                                    javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+                                    alerta.setTitle("Fin del juego");
+                                    alerta.setHeaderText("¡Has ganado!");
+                                    alerta.setContentText("Has hundido todos los barcos enemigos.");
+                                    alerta.showAndWait();
+
+                                    habilitarTableroEnemigo(false);
                                 }
                                 return;
                             } else {
@@ -223,9 +230,20 @@ public class GameController {
     }
 
     public void ejecutarTurnoActual() {
-        if (estrategiaTurno != null) {
-            estrategiaTurno.ejecutarTurno(this);
+        if (juegoTerminado || estrategiaTurno == null) return;
+        estrategiaTurno.ejecutarTurno(this);
+    }
+
+    public boolean barcosHundidos(Tablero tablero) {
+        for (int fila = 0; fila < 10; fila++) {
+            for (int col = 0; col < 10; col++) {
+                Celda celda = tablero.getCelda(fila, col);
+                if (celda.tieneBarco() && !celda.fueAtacada()) {
+                    return false;
+                }
+            }
         }
+        return true;
     }
 
     @FXML
@@ -248,7 +266,6 @@ public class GameController {
                 if (modeloCelda.tieneBarco()) {
                     Barco barco = modeloCelda.getBarco();
 
-                    // Para evitar volver a dibujar el mismo barco
                     if (barcosDibujados.contains(barco)) continue;
                     barcosDibujados.add(barco);
 
@@ -256,7 +273,6 @@ public class GameController {
                     double baseX = 0;
                     double baseY = 0;
 
-                    // Encuentra la primera celda donde está el barco
                     for (int i = 0; i < 10 && baseX == 0 && baseY == 0; i++) {
                         for (int j = 0; j < 10; j++) {
                             if (tableroMaquina.getCelda(i, j).getBarco() == barco) {
@@ -449,5 +465,13 @@ public class GameController {
 
     public GridPane getTableroPosicion() {
         return tableroPosicion;
+    }
+
+    public boolean isJuegoTerminado() {
+        return juegoTerminado;
+    }
+
+    public void terminarJuego() {
+        this.juegoTerminado = true;
     }
 }
