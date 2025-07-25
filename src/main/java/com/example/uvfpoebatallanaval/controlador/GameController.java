@@ -66,6 +66,28 @@ public class GameController {
         stage.show();
     }
 
+    @FXML
+    private void onActionReiniciar(ActionEvent event) {
+        javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+        alerta.setTitle("Confirmar reinicio");
+        alerta.setHeaderText("¿Estás seguro de que deseas reiniciar?");
+        alerta.setContentText("Perderás el progreso actual.");
+
+        Optional<ButtonType> resultado = alerta.showAndWait();
+
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/uvfpoebatallanaval/juego-view.fxml"));
+                Scene nuevaEscena = new Scene(fxmlLoader.load());
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(nuevaEscena);
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void inicializarBarcos() {
         // 1 portaaviones
         Barco portaaviones = new Barco("portaaviones", true);
