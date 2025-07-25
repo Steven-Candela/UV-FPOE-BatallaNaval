@@ -52,7 +52,7 @@
                </font></Label>
             <HBox alignment="CENTER" prefHeight="34.0" prefWidth="658.0" spacing="100.0">
                <children>
-                  <Button fx:id="reiniciarButton" mnemonicParsing="false" text="Reiniciar">
+                  <Button fx:id="reiniciarButton" mnemonicParsing="false" onAction="#onActionReiniciar" text="Reiniciar">
                      <font>
                         <Font name="Gill Sans MT" size="18.0" />
                      </font></Button>
@@ -64,7 +64,7 @@
                      <font>
                         <Font name="Gill Sans MT" size="18.0" />
                      </font></Button>
-                  <Button fx:id="salirButton" mnemonicParsing="false" text="Salir">
+                  <Button fx:id="salirButton" mnemonicParsing="false" onAction="#onActionSalirButton" text="Salir">
                      <font>
                         <Font name="Gill Sans MT" size="18.0" />
                      </font>
@@ -75,7 +75,7 @@
       </VBox>
    </bottom>
    <left>
-      <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="466.0" prefWidth="256.0" BorderPane.alignment="CENTER">
+      <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="457.0" prefWidth="256.0" BorderPane.alignment="CENTER">
          <children>
             <Label text="Tus Barcos">
                <font>

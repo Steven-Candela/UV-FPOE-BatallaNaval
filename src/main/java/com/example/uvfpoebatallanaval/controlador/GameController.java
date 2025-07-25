@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -22,6 +23,7 @@ import com.example.uvfpoebatallanaval.excepciones.ExepcionCeldaDisparada;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class GameController {
     private Tablero tableroJugador;
@@ -35,6 +37,14 @@ public class GameController {
     @FXML private AnchorPane contenedorBarcos;
 
     public void initialize() {
+        javafx.application.Platform.runLater(() -> {
+            javafx.scene.control.Alert alertaInicio = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+            alertaInicio.setTitle("Instrucciones iniciales");
+            alertaInicio.setHeaderText("¡Bienvenido a Batalla Naval!");
+            alertaInicio.setContentText("Arrastra tus barcos al tablero de posición para iniciar el juego :)");
+            alertaInicio.showAndWait();
+        });
+
         tableroJugador = new Tablero();
         tableroMaquina = new Tablero();
 
@@ -54,6 +64,28 @@ public class GameController {
         stage.setTitle("Juego");
         stage.setScene(scene);
         stage.show();
+    }
+
+    @FXML
+    private void onActionReiniciar(ActionEvent event) {
+        javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+        alerta.setTitle("Confirmar reinicio");
+        alerta.setHeaderText("¿Estás seguro de que deseas reiniciar?");
+        alerta.setContentText("Perderás el progreso actual.");
+
+        Optional<ButtonType> resultado = alerta.showAndWait();
+
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/uvfpoebatallanaval/juego-view.fxml"));
+                Scene nuevaEscena = new Scene(fxmlLoader.load());
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(nuevaEscena);
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void inicializarBarcos() {
@@ -113,6 +145,7 @@ public class GameController {
                 Rectangle fondo = new Rectangle(45, 45);
                 fondo.setFill(Color.WHITE);
                 fondo.setStroke(Color.BLACK);
+                fondo.setId("fondoCelda");
 
                 celda.getChildren().add(fondo);
 
@@ -139,7 +172,7 @@ public class GameController {
                                         if (otra.getBarco() == barco) {
                                             Node nodo = obtenerCelda(tableroPrincipal, i + 1, j + 1);
                                             if (nodo instanceof StackPane pane) {
-                                                pane.getChildren().removeIf(n -> n instanceof Shape);
+                                                pane.getChildren().removeIf(n -> n instanceof Shape && !"fondoCelda".equals(n.getId()));
                                                 pane.getChildren().addAll(ElementosDisparo.hundido(0, 0));
                                             }
                                         }
@@ -184,7 +217,6 @@ public class GameController {
                         }
                     });
                 }
-
                 tablero.add(celda, col + 1, fila + 1);
             }
         }
@@ -303,6 +335,11 @@ public class GameController {
         }
     }
 
+    @FXML
+    private void onActionSalirButton(ActionEvent event) {
+        System.exit(0);
+    }
+
     public Node obtenerCelda(GridPane grid, int fila, int columna) {
         for (Node node : grid.getChildren()) {
             if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
@@ -343,6 +380,19 @@ public class GameController {
         }
     }
 
+    private void limpiarTablero() {
+        for (Node node : tableroPrincipal.getChildren()) {
+            Integer fila = GridPane.getRowIndex(node);
+            Integer col = GridPane.getColumnIndex(node);
+
+            if (fila == null || col == null || fila == 0 || col == 0) continue;
+
+            if (node instanceof StackPane celdaPane) {
+                celdaPane.getChildren().removeIf(child -> child instanceof Shape && !("fondoCelda".equals(child.getId())));
+            }
+        }
+    }
+
     private class BarcoArrastrable implements Arrastrable {
         private final Barco barco;
         private final List<List<Shape>> formasPorCelda;
@@ -351,15 +401,16 @@ public class GameController {
         public BarcoArrastrable(Barco barco, List<List<Shape>> formasPorCelda) {
             this.barco = barco;
             this.formasPorCelda = formasPorCelda;
-
             for (List<Shape> grupo : formasPorCelda) {
                 for (Shape forma : grupo) {
                     forma.setOnMousePressed(e -> {
+                        if (juegoIniciado) return;
                         offsetX = e.getX();
                         offsetY = e.getY();
                     });
 
                     forma.setOnMouseDragged(e -> {
+                        if (juegoIniciado) return;
                         Point2D localPoint = contenedorBarcos.sceneToLocal(e.getSceneX(), e.getSceneY());
                         double baseX = localPoint.getX() - offsetX;
                         double baseY = localPoint.getY() - offsetY;
@@ -373,6 +424,7 @@ public class GameController {
                     });
 
                     forma.setOnMouseReleased(e -> {
+                        if (juegoIniciado) return;
                         Point2D local = tableroPosicion.sceneToLocal(e.getSceneX(), e.getSceneY());
                         int col = (int)(local.getX() / 45) - 1;
                         int fila = (int)(local.getY() / 45) - 1;
@@ -420,13 +472,15 @@ public class GameController {
                                 confirmacion.setHeaderText("Todos los barcos han sido colocados");
                                 confirmacion.setContentText("¿Deseas empezar a jugar?");
 
-                                confirmacion.showAndWait().ifPresent(response -> {
+                                Optional<ButtonType> resultado = confirmacion.showAndWait();
+                                if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
                                     juegoIniciado = true;
+                                    limpiarTablero();
                                     habilitarTableroEnemigo(true);
                                     setEstrategiaTurno(new TurnoHumano(GameController.this));
                                     ejecutarTurnoActual();
                                     System.out.println("El juego ha comenzado");
-                                });
+                                }
                             }
                         } catch (ExcepcionPosicionInvalida | ExcepcionCeldaOcupada ex) {
                             System.out.println("Error: " + ex.getMessage());
