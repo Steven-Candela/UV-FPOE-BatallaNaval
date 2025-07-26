@@ -1,0 +1,6 @@
+nickname=sdgf
+barcosHundidos=0
+textoTurno=Turno del Jugador
+colorTurno=-fx-font-family: 'Arial Bold'; -fx-font-size: 16; -fx-background-color: rgba(30,144,255,0.2); -fx-background-radius: 10; -fx-padding: 8 15 8 15;
+textoDisparo=Disparo de la máquina: AGUA
+colorDisparo=-fx-text-fill: white;

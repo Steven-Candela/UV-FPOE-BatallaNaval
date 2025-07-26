@@ -38,15 +38,15 @@ public class TurnoMaquina implements EstrategiaTurno {
             switch (resultado) {
                 case "agua" -> {
                     controlador.getDisparoLabel().setText("Disparo de la máquina: AGUA");
-                    controlador.getDisparoLabel().setStyle("-fx-text-fill: blue;");
+                    controlador.getDisparoLabel().setStyle("-fx-text-fill: white;");
                 }
                 case "tocado" -> {
                     controlador.getDisparoLabel().setText("Disparo de la máquina: ¡TOCADO!");
-                    controlador.getDisparoLabel().setStyle("-fx-text-fill: red;");
+                    controlador.getDisparoLabel().setStyle("-fx-text-fill: white;");
                 }
                 case "hundido" -> {
                     controlador.getDisparoLabel().setText("Disparo de la máquina: ¡HUNDIDO!");
-                    controlador.getDisparoLabel().setStyle("-fx-text-fill: black;");
+                    controlador.getDisparoLabel().setStyle("-fx-text-fill: white;");
                 }
             }
 
