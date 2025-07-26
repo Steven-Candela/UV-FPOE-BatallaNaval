@@ -3,7 +3,6 @@ package com.example.uvfpoebatallanaval.modelo;
 import com.example.uvfpoebatallanaval.controlador.GameController;
 import com.example.uvfpoebatallanaval.vista.ElementosDisparo;
 import javafx.animation.PauseTransition;
-import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Shape;
@@ -11,7 +10,23 @@ import javafx.util.Duration;
 
 import java.util.List;
 
+/**
+ * Clase TurnoMaquina, que contiene la estrategia de turno correspondiente a la máquina (IA).
+ * Implementa la interfaz {@link EstrategiaTurno} y define el comportamiento
+ * automático de disparo contra el tablero del jugador.
+ *
+ * @author Nicolle Paz, Camilo Portilla y Steven Candela
+ */
 public class TurnoMaquina implements EstrategiaTurno {
+    /**
+     * Ejecuta el turno de la máquina con una pequeña pausa para simular tiempo de espera.
+     * La máquina selecciona aleatoriamente una celda no atacada del tablero del jugador,
+     * realiza el disparo y actualiza la interfaz gráfica en función del resultado.
+     *
+     * @param controlador El controlador principal del juego, utilizado para acceder al tablero,
+     *                    actualizar la interfaz gráfica, verificar condiciones de fin de juego
+     *                    y gestionar los turnos.
+     */
     @Override
     public void ejecutarTurno(GameController controlador) {
         if (controlador.isJuegoTerminado()) return;
