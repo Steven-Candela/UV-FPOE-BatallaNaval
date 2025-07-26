@@ -49,7 +49,7 @@ public class GameController {
     public void initialize() {
         if (estadoGuardado != null) {
             cargarPartidaDesdeArchivo(estadoGuardado);
-            estadoGuardado = null; // Limpiamos para evitar problemas en el futuro
+            estadoGuardado = null;
         } else {
             iniciarNuevaPartida();
         }
@@ -116,7 +116,6 @@ public class GameController {
         setEstrategiaTurno(new TurnoHumano(this));
         ejecutarTurnoActual();
 
-        // 👇 Añadir esto: volver a dibujar los barcos del jugador
         redibujarBarcosJugador();
         redibujarDisparos();
     }
@@ -170,7 +169,7 @@ public class GameController {
     }
 
     private void redibujarDisparos() {
-        // 🔵 Redibujar disparos en el tablero de la máquina (enemigo)
+        // Redibujar disparos en el tablero de la máquina
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
                 Celda celda = tableroMaquina.getCelda(fila, col);
@@ -194,7 +193,7 @@ public class GameController {
             }
         }
 
-        // 🟡 Redibujar disparos en el tablero del jugador (por si se quiere mostrar)
+        // Redibujar disparos en el tablero del jugador
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
                 Celda celda = tableroJugador.getCelda(fila, col);
@@ -344,15 +343,15 @@ public class GameController {
                                 switch (resultado) {
                                     case "agua" -> {
                                         disparoLabel.setText("Disparo del jugador: AGUA");
-                                        disparoLabel.setStyle("-fx-text-fill: blue;");
+                                        disparoLabel.setStyle("-fx-text-fill: white;");
                                     }
                                     case "tocado" -> {
                                         disparoLabel.setText("Disparo del jugador: ¡TOCADO!");
-                                        disparoLabel.setStyle("-fx-text-fill: red;");
+                                        disparoLabel.setStyle("-fx-text-fill: white;");
                                     }
                                     case "hundido" -> {
                                         disparoLabel.setText("Disparo del jugador: ¡HUNDIDO!");
-                                        disparoLabel.setStyle("-fx-text-fill: black;");
+                                        disparoLabel.setStyle("-fx-text-fill: white;");
                                     }
                                     default -> disparoLabel.setText("Disparo desconocido");
                                 }
