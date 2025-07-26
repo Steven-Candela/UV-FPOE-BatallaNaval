@@ -9,6 +9,12 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Clase InstructionsController para la vista de instrucciones del juego.
+ * Permite regresar al menú principal desde la pantalla de instrucciones.
+ *
+ * @author Camilo Portilla
+ */
 public class InstructionsController {
     @FXML
     private void onActionVolverMenu(ActionEvent event) throws IOException {

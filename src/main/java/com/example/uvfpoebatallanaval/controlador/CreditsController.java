@@ -9,6 +9,12 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Clase CreditsController para la vista de créditos del juego.
+ * Esta clase gestiona la interacción del usuario cuando se encuentra en la pantalla de créditos.
+ *
+ * @author Camilo Portilla
+ */
 public class CreditsController {
     @FXML
     private void onActionVolverMenu(ActionEvent event) throws IOException {

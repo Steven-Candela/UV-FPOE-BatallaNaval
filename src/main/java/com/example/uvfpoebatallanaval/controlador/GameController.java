@@ -1,6 +1,5 @@
 package com.example.uvfpoebatallanaval.controlador;
 
-
 import com.example.uvfpoebatallanaval.excepciones.ExcepcionCeldaOcupada;
 import com.example.uvfpoebatallanaval.excepciones.ExcepcionPosicionInvalida;
 import com.example.uvfpoebatallanaval.modelo.*;
@@ -26,6 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Clase GameController que gestiona la lógica del juego.
+ *
+ * @author Nicolle Paz, Steven Candela y Camilo Portilla
+ */
 public class GameController {
     private Tablero tableroJugador;
     private Tablero tableroMaquina;
@@ -34,17 +38,28 @@ public class GameController {
     private boolean juegoTerminado = false;
     private Jugador jugador;
 
-    @FXML private GridPane tableroPosicion;
-    @FXML private GridPane tableroPrincipal;
-    @FXML private AnchorPane contenedorBarcos;
-    @FXML private Label turnoLabel;
-    @FXML private Label disparoLabel;
+    @FXML
+    private GridPane tableroPosicion;
+    @FXML
+    private GridPane tableroPrincipal;
+    @FXML
+    private AnchorPane contenedorBarcos;
+    @FXML
+    private Label turnoLabel;
+    @FXML
+    private Label disparoLabel;
+
     public Label getDisparoLabel() {
         return disparoLabel;
     }
 
     public static GestorPartida.EstadoJuego estadoGuardado = null;
 
+    /**
+     * Método que se ejecuta al iniciar la vista.
+     *
+     * Si hay una partida guardada, la carga. Si no, empieza una nueva partida.
+     */
     @FXML
     public void initialize() {
         if (estadoGuardado != null) {
@@ -55,8 +70,14 @@ public class GameController {
         }
     }
 
+    /**
+     * Inicia una nueva partida desde cero.
+     *
+     * Elimina cualquier partida guardada anterior, solicita el nombre del jugador,
+     * muestra una alerta con instrucciones, crea los tableros del jugador y la máquina,
+     * coloca los barcos de ambos y desactiva el tablero enemigo hasta que el jugador esté listo.
+     */
     private void iniciarNuevaPartida() {
-
         GestorPartida.eliminarPartidaGuardada();
         solicitarNombreJugador();
 
@@ -78,7 +99,12 @@ public class GameController {
         habilitarTableroEnemigo(false);
     }
 
-
+    /**
+     * Solicita al usuario que ingrese su nombre mediante un cuadro de diálogo.
+     *
+     * Si el jugador ingresa un nombre, se crea un nuevo objeto Jugador con ese nombre.
+     * Si cancela el diálogo, se cierra la aplicación.
+     */
     private void solicitarNombreJugador() {
         javafx.scene.control.TextInputDialog dialogo = new javafx.scene.control.TextInputDialog();
         dialogo.setTitle("Nombre del Jugador");
@@ -91,11 +117,20 @@ public class GameController {
             jugador = new Jugador(nombre);
             System.out.println("Jugador: " + nombre);
         }, () -> {
-            // Si cancela, cerramos el juego
+            // Si cancela, se cierra el juego
             javafx.application.Platform.exit();
         });
     }
 
+    /**
+     * Carga una partida guardada a partir del estado recibido.
+     *
+     * Restaura el tablero del jugador, el tablero de la máquina,
+     * el nombre del jugador, los barcos hundidos y los textos del turno y disparo.
+     * También actualiza los elementos visuales del juego y establece el turno del jugador.
+     *
+     * @param estado Objeto que contiene toda la información necesaria para reanudar una partida guardada.
+     */
     private void cargarPartidaDesdeArchivo(GestorPartida.EstadoJuego estado) {
         this.tableroJugador = estado.tableroJugador;
         this.tableroMaquina = estado.tableroMaquina;
@@ -112,7 +147,6 @@ public class GameController {
         disparoLabel.setText(estado.textoDisparo);
         disparoLabel.setStyle(estado.colorDisparo);
 
-
         setEstrategiaTurno(new TurnoHumano(this));
         ejecutarTurnoActual();
 
@@ -120,6 +154,13 @@ public class GameController {
         redibujarDisparos();
     }
 
+    /**
+     * Redibuja visualmente todos los barcos del jugador en el tablero de posicionamiento.
+     *
+     * Este método recorre todas las celdas del tablero del jugador, identifica los barcos,
+     * evita dibujar duplicados, calcula su posición base y utiliza las formas gráficas
+     * generadas por cada barco para mostrarlos en el `GridPane` correspondiente.
+     */
     private void redibujarBarcosJugador() {
         List<Barco> barcosDibujados = new ArrayList<>();
 
@@ -168,6 +209,17 @@ public class GameController {
         }
     }
 
+    /**
+     * Redibuja todos los disparos realizados tanto en el tablero del jugador como en el de la máquina.
+     *
+     * Este método recorre las celdas de ambos tableros y, si una celda ha sido atacada,
+     * añade las formas gráficas correspondientes según el resultado del disparo:
+     * - Agua: si no hay barco.
+     * - Tocado: si hay un barco que no ha sido hundido.
+     * - Hundido: si el barco fue completamente destruido.
+     *
+     * Se asegura de limpiar correctamente las formas anteriores cuando se dibuja un barco hundido.
+     */
     private void redibujarDisparos() {
         // Redibujar disparos en el tablero de la máquina
         for (int fila = 0; fila < 10; fila++) {
@@ -218,12 +270,18 @@ public class GameController {
         }
     }
 
-
+    /**
+     * Guarda el estado actual de la partida.
+     *
+     * Este método recopila la información relevante del juego, como el estado de ambos tableros,
+     * el nombre del jugador, el número de barcos hundidos, y el texto y estilo de las etiquetas de turno y disparo.
+     * Luego, delega la tarea de persistencia al {@code GestorPartida.guardarPartida}.
+     */
     public void guardarEstado() {
         System.out.println("Guardado desde el turno de la máquina. Barcos hundidos: " + jugador.getBarcosHundidos());
 
         String textoTurno = turnoLabel.getText();
-        String colorTurno = turnoLabel.getStyle(); // Ej: "-fx-text-fill: red;"
+        String colorTurno = turnoLabel.getStyle();
         String textoDisparo = disparoLabel.getText();
         String colorDisparo = disparoLabel.getStyle();
 
@@ -231,7 +289,15 @@ public class GameController {
                 textoTurno, colorTurno, textoDisparo, colorDisparo);
     }
 
-
+    /**
+     * Maneja el evento del botón para volver al menú principal.
+     *
+     * Este método carga la vista del menú desde el archivo FXML correspondiente
+     * y reemplaza la escena actual con la del menú. También actualiza el título de la ventana.
+     *
+     * @param event el evento de acción generado al hacer clic en el botón.
+     * @throws IOException si ocurre un error al cargar el archivo FXML.
+     */
     @FXML
     private void onActionVolverMenu(ActionEvent event) throws IOException {
         System.out.println("El juego inicia");
@@ -243,6 +309,14 @@ public class GameController {
         stage.show();
     }
 
+    /**
+     * Maneja el evento del botón para reiniciar el juego.
+     *
+     * Muestra una alerta de confirmación al usuario. Si el usuario confirma,
+     * se llama al método {@code reiniciarJuego()} para reiniciar el estado del juego.
+     *
+     * @param event el evento de acción generado al hacer clic en el botón.
+     */
     @FXML
     private void onActionReiniciar(ActionEvent event) {
         javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
@@ -257,6 +331,13 @@ public class GameController {
         }
     }
 
+    /**
+     * Inicializa los barcos disponibles para el jugador y los agrega al contenedor
+     * de arrastre con posiciones predeterminadas.
+     *
+     * Cada barco se posiciona en coordenadas específicas dentro del contenedor para
+     * que el jugador pueda arrastrarlos al tablero.
+     */
     private void inicializarBarcos() {
         // 1 portaaviones
         Barco portaaviones = new Barco("portaaviones", true);
@@ -278,6 +359,17 @@ public class GameController {
         agregarAlContenedor(new Barco("fragata", false), 230, 120);
     }
 
+    /**
+     * Agrega visualmente un barco al contenedor de barcos, ubicándolo en las coordenadas especificadas.
+     *
+     * Este método genera las formas que representan al barco, las asocia al objeto
+     * correspondiente mediante {@code setUserData}, y las añade al contenedor visual.
+     * Finalmente, se habilita el comportamiento de arrastre mediante {@code BarcoArrastrable}.
+     *
+     * @param barco El barco que se va a representar y arrastrar.
+     * @param x     Coordenada X inicial en la que se colocará el barco.
+     * @param y     Coordenada Y inicial en la que se colocará el barco.
+     */
     private void agregarAlContenedor(Barco barco, double x, double y) {
         List<List<Shape>> formasPorCelda = barco.crearFormas(x, y);
 
@@ -291,7 +383,13 @@ public class GameController {
 
         new BarcoArrastrable(barco, formasPorCelda);
     }
-
+    /**
+     * Crea y dibuja el tablero de juego con etiquetas de filas y columnas, y define el comportamiento de cada celda.
+     *
+     * @param tablero      El GridPane donde se construirá visualmente el tablero.
+     * @param modelo       El modelo lógico del tablero (con celdas y barcos).
+     * @param esPrincipal  Si es true, se habilitan los disparos (tablero enemigo). Si es false, es el tablero propio.
+     */
     private void crearTablero(GridPane tablero, Tablero modelo, boolean esPrincipal) {
         tablero.getChildren().clear();
 
@@ -422,6 +520,12 @@ public class GameController {
         }
     }
 
+    /**
+     * Coloca aleatoriamente los barcos en el tablero de la máquina.
+     * Se crean 10 barcos de diferentes tipos y orientaciones.
+     * Cada barco se posiciona aleatoriamente dentro del tablero sin superponerse ni salirse de los límites.
+     * En caso de que la posición no sea válida o ya esté ocupada, se vuelve a intentar hasta lograr colocarlo correctamente.
+     */
     private void colocarBarcosMaquina() {
         Barco[] barcos = {
                 new Barco("portaaviones", true),
@@ -457,6 +561,11 @@ public class GameController {
         }
     }
 
+    /**
+     * Establece la estrategia de turno actual (jugador o máquina) y actualiza la etiqueta del turno en la interfaz.
+     *
+     * @param estrategia la estrategia de turno a usar, puede ser {@code TurnoHumano} o {@code TurnoMaquina}.
+     */
     public void setEstrategiaTurno(EstrategiaTurno estrategia) {
         this.estrategiaTurno = estrategia;
 
@@ -469,11 +578,22 @@ public class GameController {
         }
     }
 
+    /**
+     * Ejecuta el turno actual utilizando la estrategia definida (jugador o máquina).
+     * Si el juego ha terminado o no se ha definido una estrategia, no se realiza ninguna acción.
+     */
     public void ejecutarTurnoActual() {
         if (juegoTerminado || estrategiaTurno == null) return;
         estrategiaTurno.ejecutarTurno(this);
     }
 
+    /**
+     * Verifica si todos los barcos en el tablero han sido hundidos.
+     *
+     * @param tablero El tablero a verificar.
+     * @return {@code true} si todos los barcos han sido atacados (hundidos),
+     *         {@code false} si al menos una celda con barco no ha sido atacada.
+     */
     public boolean barcosHundidos(Tablero tablero) {
         for (int fila = 0; fila < 10; fila++) {
             for (int col = 0; col < 10; col++) {
@@ -486,6 +606,11 @@ public class GameController {
         return true;
     }
 
+    /**
+     * Muestra visualmente los barcos del tablero enemigo en el tablero principal,
+     * solo si el juego aún no ha iniciado. Si el juego ya comenzó, muestra una
+     * alerta informando que no se puede visualizar el tablero enemigo.
+     */
     @FXML
     private void onActionVerTableroEnemigo() {
         if (juegoIniciado) {
@@ -543,11 +668,24 @@ public class GameController {
         }
     }
 
+    /**
+     * Cierra la aplicación cuando se presiona el botón "Salir".
+     *
+     * @param event el evento de acción generado al presionar el botón
+     */
     @FXML
     private void onActionSalirButton(ActionEvent event) {
         System.exit(0);
     }
 
+    /**
+     * Obtiene el nodo en la posición especificada dentro de un {@link GridPane}.
+     *
+     * @param grid   el GridPane del cual se desea obtener la celda
+     * @param fila   la fila de la celda (índice empezando en 0)
+     * @param columna la columna de la celda (índice empezando en 0)
+     * @return el {@link Node} ubicado en la fila y columna especificadas, o {@code null} si no se encuentra ningún nodo
+     */
     public Node obtenerCelda(GridPane grid, int fila, int columna) {
         for (Node node : grid.getChildren()) {
             if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
@@ -558,6 +696,13 @@ public class GameController {
         return null;
     }
 
+    /**
+     * Verifica si el jugador ha colocado todos sus barcos en el tablero.
+     * Se espera que en total haya 21 celdas ocupadas por barcos.
+     *
+     * @return {@code true} si hay exactamente 21 celdas ocupadas por barcos;
+     *         {@code false} en caso contrario.
+     */
     private boolean verificarBarcosColocados() {
         int totalCeldasOcupadas = 0;
         for (int fila = 0; fila < 10; fila++) {
@@ -571,6 +716,13 @@ public class GameController {
         return totalCeldasOcupadas == 21;
     }
 
+    /**
+     * Habilita o deshabilita la interacción con las celdas del tablero enemigo.
+     * Las etiquetas de fila y columna (fila 0 o columna 0) no se ven afectadas.
+     *
+     * @param habilitar {@code true} para permitir interacción con las celdas del tablero enemigo,
+     *                  {@code false} para deshabilitarla.
+     */
     public void habilitarTableroEnemigo(boolean habilitar) {
         for (Node node : tableroPrincipal.getChildren()) {
             Integer fila = GridPane.getRowIndex(node);
@@ -588,6 +740,11 @@ public class GameController {
         }
     }
 
+    /**
+     * Elimina todos los elementos gráficos (formas) del tablero principal,
+     * excepto aquellos que tienen el ID "fondoCelda".
+     * Este método omite las etiquetas de fila y columna ubicadas en la fila 0 o columna 0.
+     */
     private void limpiarTableroPrincipal() {
         for (Node node : tableroPrincipal.getChildren()) {
             Integer fila = GridPane.getRowIndex(node);
@@ -601,6 +758,11 @@ public class GameController {
         }
     }
 
+    /**
+     * Limpia el tablero de posicionamiento eliminando todos los elementos gráficos (formas)
+     * dentro de cada celda, excepto aquellos con el ID "fondoCelda".
+     * Se omiten las celdas correspondientes a etiquetas de fila y columna (fila 0 o columna 0).
+     */
     private void limpiarTableroPosicion() {
         for (Node node : tableroPosicion.getChildren()) {
             Integer fila = GridPane.getRowIndex(node);
@@ -614,6 +776,13 @@ public class GameController {
         }
     }
 
+    /**
+     * Reinicia completamente el juego de Batalla Naval.
+     *
+     * Este método restablece los tableros del jugador y de la máquina, limpia las vistas gráficas,
+     * vuelve a crear los tableros, reinicializa y coloca los barcos, y restablece el estado del juego.
+     * También deshabilita la interacción con el tablero enemigo hasta que se inicie una nueva partida.
+     */
     public void reiniciarJuego() {
         tableroJugador = new Tablero();
         tableroMaquina = new Tablero();
@@ -635,80 +804,33 @@ public class GameController {
         habilitarTableroEnemigo(false);
     }
 
-    private void rotarBarcoEnContenedor(Barco barco) {
-        // Solo permitir rotación antes de que inicie el juego
-        if (juegoIniciado) {
-            return;
-        }
-
-        System.out.println("Rotando barco: " + barco.getTipo());
-
-        javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
-        alerta.setTitle("Test");
-        alerta.setHeaderText("¡Clic derecho detectado!");
-        alerta.setContentText("Barco: " + barco.getTipo());
-        alerta.showAndWait();
-
-        // Rotar el barco
-        barco.rotar();
-
-        // Redibujar el barco en el contenedor
-        redibujarBarcoEnContenedor(barco);
-    }
-
-    private void redibujarBarcoEnContenedor(Barco barco) {
-        // Encontrar la posición actual del barco
-        double posX = 50, posY = 50; // Posición por defecto
-
-        // Buscar alguna forma del barco para obtener su posición
-        for (Node nodo : contenedorBarcos.getChildren()) {
-            if (nodo instanceof Shape forma && forma.getUserData() == barco) {
-                posX = forma.getLayoutX();
-                posY = forma.getLayoutY();
-                break;
-            }
-        }
-
-        // Remover todas las formas del barco del contenedor
-        contenedorBarcos.getChildren().removeIf(nodo ->
-                nodo instanceof Shape && ((Shape) nodo).getUserData() == barco
-        );
-
-        // Crear nuevas formas con la nueva orientación
-        List<List<Shape>> nuevasFormas = barco.crearFormas(posX, posY);
-
-        // Agregar las nuevas formas al contenedor y marcarlas
-        for (List<Shape> grupo : nuevasFormas) {
-            for (Shape forma : grupo) {
-                forma.setUserData(barco); // Marcar la forma con el barco
-            }
-            contenedorBarcos.getChildren().addAll(grupo);
-        }
-
-        // Recrear los eventos de arrastre
-        new BarcoArrastrable(barco, nuevasFormas);
-    }
-
+    /**
+     * Clase interna que representa un barco que puede ser arrastrado y rotado
+     * antes de iniciar el juego. Maneja eventos del mouse para permitir al
+     * usuario mover, soltar o rotar el barco en el contenedor.
+     */
     private class BarcoArrastrable implements Arrastrable {
         private final Barco barco;
         private final List<List<Shape>> formasPorCelda;
         private double offsetX, offsetY;
 
+        /**
+         * Crea un barco arrastrable con sus formas gráficas.
+         *
+         * @param barco El barco lógico a representar.
+         * @param formasPorCelda Lista de formas gráficas agrupadas por celda del barco.
+         */
         public BarcoArrastrable(Barco barco, List<List<Shape>> formasPorCelda) {
             this.barco = barco;
             this.formasPorCelda = formasPorCelda;
             for (List<Shape> grupo : formasPorCelda) {
                 for (Shape forma : grupo) {
-                    forma.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, e -> {
-                        System.out.println("CLICK DETECTADO - Botón: " + e.getButton() + ", Juego iniciado: " + juegoIniciado);
-
+                    forma.setOnMousePressed(e -> {
                         if (juegoIniciado) return;
-                        if (e.getButton() == javafx.scene.input.MouseButton.SECONDARY) { // Clic derecho
-                            System.out.println("CLIC DERECHO CONFIRMADO - Ejecutando rotación");
-                            rotarBarcoEnContenedor(barco);
-                            e.consume();
-                        }
+                        offsetX = e.getX();
+                        offsetY = e.getY();
                     });
+
                     forma.setOnMousePressed(e -> {
                         if (juegoIniciado) return;
                         offsetX = e.getX();
@@ -721,12 +843,7 @@ public class GameController {
                         double baseX = localPoint.getX() - offsetX;
                         double baseY = localPoint.getY() - offsetY;
 
-                        for (List<Shape> subGrupo : formasPorCelda) {
-                            for (Shape f : subGrupo) {
-                                f.setLayoutX(baseX);
-                                f.setLayoutY(baseY);
-                            }
-                        }
+                        mover(baseX,baseY);
                     });
 
                     forma.setOnMouseReleased(e -> {
@@ -802,9 +919,12 @@ public class GameController {
             }
         }
 
-        @Override
-        public void iniciarArrastre(double offsetX, double offsetY) {}
-
+        /**
+         * Mueve todas las formas del barco a una nueva posición.
+         *
+         * @param x Posición X en el contenedor.
+         * @param y Posición Y en el contenedor.
+         */
         @Override
         public void mover(double x, double y) {
             for (List<Shape> grupo : formasPorCelda) {
@@ -814,24 +934,38 @@ public class GameController {
                 }
             }
         }
-
-
-        @Override
-        public void soltar(double x, double y) {}
     }
 
+    /**
+     * Obtiene el modelo del tablero del jugador.
+     *
+     * @return el {@link Tablero} del jugador.
+     */
     public Tablero getTableroJugador() {
         return tableroJugador;
     }
 
+    /**
+     * Obtiene el componente visual (GridPane) donde el jugador organiza sus barcos.
+     *
+     * @return el {@link GridPane} usado para la colocación de los barcos del jugador.
+     */
     public GridPane getTableroPosicion() {
         return tableroPosicion;
     }
 
+    /**
+     * Indica si el juego ha finalizado.
+     *
+     * @return {@code true} si el juego ha terminado, {@code false} en caso contrario.
+     */
     public boolean isJuegoTerminado() {
         return juegoTerminado;
     }
 
+    /**
+     * Marca el estado del juego como terminado.
+     */
     public void terminarJuego() {
         this.juegoTerminado = true;
     }
