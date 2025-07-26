@@ -20,7 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
-import com.example.uvfpoebatallanaval.excepciones.ExepcionCeldaDisparada;
+import com.example.uvfpoebatallanaval.excepciones.ExcepcionCeldaDisparada;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -335,7 +335,7 @@ public class GameController {
                         try {
                             Celda celdaModelo = modelo.getCelda(f, c);
                             if (celdaModelo.fueAtacada()) {
-                                throw new ExepcionCeldaDisparada("Ya disparaste en esta celda.");
+                                throw new ExcepcionCeldaDisparada("Ya disparaste en esta celda.");
                             }
                             String resultado = celdaModelo.recibirDisparo();
 
@@ -406,7 +406,7 @@ public class GameController {
                             guardarEstado();
 
 
-                        } catch (ExepcionCeldaDisparada ex) {
+                        } catch (ExcepcionCeldaDisparada ex) {
                             System.out.println("Error: " + ex.getMessage());
 
                             javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
